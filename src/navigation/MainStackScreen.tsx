@@ -1,6 +1,6 @@
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   addPostScreen,
   contactScreen,
@@ -19,6 +19,10 @@ import PrivacyScreen from '../screens/Privacy/PrivacyScreen';
 import ContactScreen from '../screens/Contact/ContactScreen';
 import strings from '../constants/strings.json';
 import EmailVerificationScreen from '../screens/EmailVerification/EmailVerificationScreen';
+import {getGeoLocation, getUserUniqueID} from '../helpers/functions';
+import loginDataService from '../appwrite/login';
+import {Platform} from 'react-native';
+import SplashScreen from 'react-native-splash-screen';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,6 +39,31 @@ function MainStackScreen(): JSX.Element {
       },
     },
   };
+
+  const getGeoLogin = async () => {
+    const unique = await getUserUniqueID();
+    if (unique) {
+      const response = await getGeoLocation();
+      const prevRecord = await loginDataService.getPrevLoginLocation(
+        response?.data.ip,
+      );
+      if (prevRecord?.documents?.length === 0) {
+        await loginDataService.postLoginLocation({
+          ...response?.data,
+          unique_id: unique,
+          device: Platform.OS,
+        });
+      } else {
+        await loginDataService.increaseCount(prevRecord?.documents[0]);
+      }
+    }
+  };
+
+  useEffect(() => {
+    Platform.OS !== 'web' && SplashScreen.hide();
+    getGeoLogin();
+  }, []);
+
   return (
     <NavigationContainer
       documentTitle={{
