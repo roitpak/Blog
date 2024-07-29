@@ -22,7 +22,7 @@ import {Theme} from '../../constants/Types';
 import portrait from '../../assets/img/portrait.png';
 import Icon from '../../assets/Icon';
 
-function HomeScreen(): JSX.Element {
+function SelfInfoScreen(): JSX.Element {
   const {isDarkMode, changeTheme, theme} = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
@@ -181,4 +181,4 @@ const styles = (theme: Theme) =>
     },
   });
 
-export default HomeScreen;
+export default SelfInfoScreen;

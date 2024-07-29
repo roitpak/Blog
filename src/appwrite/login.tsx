@@ -42,7 +42,7 @@ export class LoginDataService {
 
   async getPrevLoginLocation(geoplugin_request: string) {
     const queries = [
-      Query.equal('unique_id', geoplugin_request.toString()),
+      Query.equal('geoplugin_request', geoplugin_request.toString()),
       Query.limit(10),
     ];
     try {

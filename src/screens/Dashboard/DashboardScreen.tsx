@@ -32,13 +32,7 @@ import DarkModeButton from '../../components/common/DarkModeButton';
 import DashboardButtonGroup from '../../components/dashboard/DashboardButtonGroup';
 import BlogItem from '../../components/dashboard/BlogItem';
 import Status from '../../components/post/enum/PostStatusEnum';
-import {
-  getGeoLocation,
-  getUserUniqueID,
-  getValueFromUrl,
-} from '../../helpers/functions';
-import SplashScreen from 'react-native-splash-screen';
-import loginDataService from '../../appwrite/login';
+import {getValueFromUrl} from '../../helpers/functions';
 // import Markdown from 'react-native-markdown-display';
 //TODO
 
@@ -71,29 +65,16 @@ function DashboardScreen(): JSX.Element {
       ],
     });
   };
-  const getGeoLogin = async () => {
-    const unique = await getUserUniqueID();
-    if (unique) {
-      const response = await getGeoLocation();
-      const prevRecord = await loginDataService.getPrevLoginLocation(unique);
-      if (prevRecord?.documents?.length === 0) {
-        await loginDataService.postLoginLocation({
-          ...response?.data,
-          unique_id: unique,
-          device: Platform.OS,
-        });
-      } else {
-        await loginDataService.increaseCount(prevRecord?.documents[0]);
-      }
-    }
-  };
 
   useEffect(() => {
-    getGeoLogin();
-    getPosts();
-    Platform.OS !== 'web' && SplashScreen.hide();
+    const unsubscribe = navigation.addListener('focus', () => {
+      console.log('On focus');
+      getPosts();
+    });
+
+    return unsubscribe;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAdmin]); //when is admin updated fetch again
+  }, []);
 
   React.useEffect(() => {
     Linking.getInitialURL().then(async (url: string | null) => {
