@@ -1,4 +1,4 @@
-export const homeScreen: string = 'HomeScreen';
+export const selfInfoScreen: string = 'SelfInfoScreen';
 export const loginScreen: string = 'LoginScreen';
 export const dashboardScreen: string = 'DashboardScreen';
 export const addPostScreen: string = 'AddPostScreen';

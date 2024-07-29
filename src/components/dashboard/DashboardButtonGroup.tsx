@@ -5,14 +5,14 @@ import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Theme} from '../../constants/Types';
 import {ParamListBase, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {homeScreen, privacyScreen} from '../../constants/Screens';
+import {selfInfoScreen, privacyScreen} from '../../constants/Screens';
 
 const DashboardButtonGroup = () => {
   const {theme} = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
-  const goToHomeScreen = () => {
-    navigation.navigate(homeScreen);
+  const goSelfInfoScreen = () => {
+    navigation.navigate(selfInfoScreen);
   };
 
   const goToPrivacyScreen = () => {
@@ -26,7 +26,7 @@ const DashboardButtonGroup = () => {
   return (
     <View style={styles(theme).container}>
       <TouchableOpacity
-        onPress={goToHomeScreen}
+        onPress={goSelfInfoScreen}
         style={[styles(theme).items, styles(theme).borderRight]}>
         <CustomText style={styles(theme).text} type="p1" title="Me" />
       </TouchableOpacity>
