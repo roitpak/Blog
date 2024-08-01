@@ -33,6 +33,7 @@ import DashboardButtonGroup from '../../components/dashboard/DashboardButtonGrou
 import BlogItem from '../../components/dashboard/BlogItem';
 import Status from '../../components/post/enum/PostStatusEnum';
 import {getValueFromUrl} from '../../helpers/functions';
+import postMetricsService from '../../appwrite/postMetrics';
 // import Markdown from 'react-native-markdown-display';
 //TODO
 
@@ -68,7 +69,7 @@ function DashboardScreen(): JSX.Element {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      console.log('On focus');
+      postMetricsService.createPostMetrics('669e2f148b04084c5792');
       getPosts();
     });
 
