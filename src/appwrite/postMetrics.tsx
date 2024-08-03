@@ -2,6 +2,7 @@ import {Client, Databases, Query, ID} from 'appwrite';
 import Config from 'react-native-config';
 import {Platform} from 'react-native';
 import {PostMetrics} from './types/post_metrics';
+import storedPostIdsService from '../helpers/functions';
 
 const myConfig = Platform.OS === 'web' ? process.env : Config;
 export class PostMetricsService {
@@ -39,12 +40,24 @@ export class PostMetricsService {
         myConfig.REACT_APP_POSTS_METRICS_COLLECTION,
         queries,
       );
-      return response;
+      if (response.documents.length > 0) {
+        const postMetrics = response.documents[0] as unknown as PostMetrics;
+        this.increaseViewsCount(postMetrics);
+      }
+
+      return response?.documents as unknown as PostMetrics[];
     } catch (error) {
       throw false;
     }
   }
+
   async increaseViewsCount(prevData: PostMetrics) {
+    const alreadyViewed = await storedPostIdsService.isIDPresent(
+      prevData.post_id,
+    );
+    if (alreadyViewed) {
+      return;
+    }
     const newCount = prevData.views ? prevData.views + 1 : 1;
     const postData = {
       views: newCount,

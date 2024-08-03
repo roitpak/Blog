@@ -74,7 +74,7 @@ export class PostService {
         ID.unique(),
         data,
       );
-      await postMetricsService.createPostMetrics(response.$id);
+      postMetricsService.createPostMetrics(response.$id);
       return response;
     } catch (error) {
       throw error;
