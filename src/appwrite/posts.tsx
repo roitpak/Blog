@@ -4,6 +4,7 @@ import Config from 'react-native-config';
 import {Platform} from 'react-native';
 import {Asset} from 'react-native-image-picker';
 import {PostContent} from '../constants/Types';
+import postMetricsService from './postMetrics';
 
 const myConfig = Platform.OS === 'web' ? process.env : Config;
 export class PostService {
@@ -67,12 +68,14 @@ export class PostService {
 
   async createPost(data: Post) {
     try {
-      return await this.databases.createDocument(
+      const response = await this.databases.createDocument(
         myConfig.REACT_APP_POSTS_DATABASE,
         myConfig.REACT_APP_POSTS_COLLECTION,
         ID.unique(),
         data,
       );
+      postMetricsService.createPostMetrics(response.$id);
+      return response;
     } catch (error) {
       throw error;
     }

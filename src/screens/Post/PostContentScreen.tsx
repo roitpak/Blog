@@ -28,10 +28,13 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import Clipboard from '@react-native-clipboard/clipboard';
 import GithubLink from '../../components/post/GithubLink';
 import {formatDate} from '../../helpers/functions';
+import {PostMetrics} from '../../appwrite/types/post_metrics';
+import postMetricsService from '../../appwrite/postMetrics';
 
 function PostContentScreen({route}: any): JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const [post, setPost] = useState(route.params);
+  const [postMetrics, setPostMetrics] = useState<PostMetrics>();
   const [newPostData, setNewPostData] = useState<PostContent | null>(null);
   const {isAdmin} = useUser();
 
@@ -42,6 +45,11 @@ function PostContentScreen({route}: any): JSX.Element {
 
   useEffect(() => {
     setPost(route.params);
+    postMetricsService.getPostMetrics(route?.params?.$id).then(response => {
+      if (response.length > 0) {
+        setPostMetrics(response[0]);
+      }
+    });
   }, [route]);
 
   const onChange = (value: PostContent) => {
@@ -163,10 +171,23 @@ function PostContentScreen({route}: any): JSX.Element {
             title={post.title}
             type={'h1'}
           />
-          <CustomText
-            title={' · ' + formatDate(new Date(post?.$createdAt))}
-            type={'p2'}
-          />
+          <View style={styles(theme).timeAndViews}>
+            <CustomText
+              style={styles(theme).date}
+              title={' · ' + formatDate(new Date(post?.$createdAt))}
+              type={'p2'}
+            />
+            {postMetrics && (
+              <View style={styles(theme).timeAndViews}>
+                <Icon
+                  icon={'eye'}
+                  size={theme.sizes.medium}
+                  color={theme.colors.text_color}
+                />
+                <CustomText title={' ' + postMetrics?.views} type={'p2'} />
+              </View>
+            )}
+          </View>
         </View>
       </View>
       {loading && (
@@ -264,6 +285,12 @@ const styles = (theme: Theme) =>
     },
     titleWithTime: {
       marginVertical: theme.sizes.large,
+    },
+    timeAndViews: {
+      flexDirection: 'row',
+    },
+    date: {
+      marginRight: theme.sizes.small,
     },
   });
 
