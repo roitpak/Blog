@@ -3,6 +3,7 @@ import {Platform} from 'react-native';
 import Config from 'react-native-config';
 import {getUniqueId} from 'react-native-device-info';
 import {v4 as uuidv4} from 'uuid';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const myConfig = Platform.OS === 'web' ? process.env : Config;
 
@@ -84,3 +85,46 @@ export function calculateReadingTime(wordCount: number, wordsPerMinute = 200) {
   const minutes = Math.ceil(wordCount / wordsPerMinute);
   return minutes;
 }
+
+const VIEWED_POST_STORAGE_KEY = 'storedIDs';
+
+class StoredPostIdsService {
+  async storeIDs(ids: string) {
+    try {
+      const jsonValue = JSON.stringify(ids);
+      await AsyncStorage.setItem(VIEWED_POST_STORAGE_KEY, jsonValue);
+    } catch (e) {
+      console.error('Error storing IDs:', e);
+    }
+  }
+  async getIDs() {
+    try {
+      const jsonValue = await AsyncStorage.getItem(VIEWED_POST_STORAGE_KEY);
+
+      return jsonValue != null ? JSON.parse(jsonValue) : [];
+    } catch (e) {
+      console.error('Error retrieving IDs:', e);
+      return [];
+    }
+  }
+
+  async isIDPresent(id: string) {
+    const ids = await this.getIDs();
+    const present = ids.includes(id);
+    if (!present) {
+      this.addID(id);
+    }
+    return present;
+  }
+
+  // Add an ID to the array if it's not already present
+  async addID(id: string) {
+    const ids = await this.getIDs();
+    if (!ids.includes(id)) {
+      ids.push(id);
+      await this.storeIDs(ids);
+    }
+  }
+}
+const storedPostIdsService = new StoredPostIdsService();
+export default storedPostIdsService;

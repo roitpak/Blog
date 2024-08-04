@@ -39,6 +39,14 @@ function AddPostModal({showAddPost, close}: AddPostModalProps): JSX.Element {
   const {user} = useUser();
   const {openModal} = useModal();
   const {theme} = useTheme();
+
+  const closeModal = () => {
+    setPostTitle('');
+    setCategory([]);
+    setLoading(false);
+    close();
+  };
+
   const addPost = async () => {
     setLoading(true);
     const data: Post = {
@@ -50,15 +58,14 @@ function AddPostModal({showAddPost, close}: AddPostModalProps): JSX.Element {
     await postService
       .createPost(data)
       .then(response => {
-        setLoading(false);
-        close();
+        closeModal();
         if (response) {
           navigation.navigate(addPostScreen, response);
         }
       })
       .catch(err => {
-        setLoading(false);
-        close();
+        closeModal();
+        console.log(err);
         if (err instanceof Error) {
           openModal({title: err.message});
         } else {

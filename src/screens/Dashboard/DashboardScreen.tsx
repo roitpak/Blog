@@ -68,13 +68,12 @@ function DashboardScreen(): JSX.Element {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      console.log('On focus');
       getPosts();
     });
-
+    getPosts();
     return unsubscribe;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isAdmin]);
 
   React.useEffect(() => {
     Linking.getInitialURL().then(async (url: string | null) => {
