@@ -67,11 +67,7 @@ function DashboardScreen(): JSX.Element {
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      getPosts();
-    });
     getPosts();
-    return unsubscribe;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAdmin]);
 
@@ -110,6 +106,7 @@ function DashboardScreen(): JSX.Element {
   }, [navigation]);
 
   const getPosts = async () => {
+    console.log('gettingPosts');
     setLoading(true);
     await postService
       .getPosts(isAdmin)
