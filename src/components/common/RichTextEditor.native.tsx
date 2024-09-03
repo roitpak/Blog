@@ -8,8 +8,20 @@ export default function RichTextEditor() {
     <Text style={{color: tintColor}}>H1</Text>
   );
 
+  const handleHead2 = ({tintColor}: {tintColor: string}) => (
+    <Text style={{color: tintColor}}>H2</Text>
+  );
+
+  const handleHead3 = ({tintColor}: {tintColor: string}) => (
+    <Text style={{color: tintColor}}>H3</Text>
+  );
+
+  const handleHead5 = ({tintColor}: {tintColor: string}) => (
+    <Text style={{color: tintColor}}>H5</Text>
+  );
+
   return (
-    <View style={{width: '100%', height: 500}}>
+    <View style={{width: '100%'}}>
       <RichEditor
         ref={richText}
         onChange={descriptionText => {
@@ -23,10 +35,24 @@ export default function RichTextEditor() {
           actions.setItalic,
           actions.setUnderline,
           actions.heading1,
+          actions.heading2,
+          actions.heading3,
+        ]}
+        iconMap={{
+          [actions.heading1]: handleHead,
+          [actions.heading2]: handleHead2,
+          [actions.heading3]: handleHead3,
+        }}
+      />
+      <RichToolbar
+        editor={richText}
+        actions={[
+          actions.blockquote,
+          actions.insertOrderedList,
+          actions.insertBulletsList,
           actions.code,
           actions.insertLink,
         ]}
-        iconMap={{[actions.heading1]: handleHead}}
       />
     </View>
   );
