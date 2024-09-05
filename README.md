@@ -15,6 +15,7 @@
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
+### An Open Source React Native built blog website/mobile app.
 
 <!-- Table of Contents -->
 <details>
