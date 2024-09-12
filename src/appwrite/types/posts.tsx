@@ -1,7 +1,7 @@
 import Status from '../../components/post/enum/PostStatusEnum';
 
 export interface Post {
-  $id?: string;
+  $id: string;
   title: string;
   status?: Status;
   category: string[];
@@ -9,8 +9,9 @@ export interface Post {
   contents: string[];
   shareUrl?: URL;
   likes?: number;
-  githubUrl?: URL;
+  githubUrl?: string;
   tldr?: string;
-  videoUrl?: URL;
+  videoUrl?: string;
   $createdAt?: string;
+  content: string;
 }

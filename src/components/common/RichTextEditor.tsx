@@ -1,10 +1,19 @@
-import React, {useState} from 'react';
+import React from 'react';
+import {StyleSheet} from 'react-native';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
-export default function RichTextEditor() {
-  const [value, setValue] = useState('');
+interface RichTextEditorProps {
+  value: string;
+  onChangeText: (text: string) => void;
+  style?: React.CSSProperties;
+}
 
+export default function RichTextEditor({
+  value,
+  onChangeText,
+  style,
+}: RichTextEditorProps) {
   const modules = {
     toolbar: [
       [{header: [1, 2, 3, false]}],
@@ -29,12 +38,16 @@ export default function RichTextEditor() {
 
   return (
     <ReactQuill
-      style={{minHeight: 300, width: '100%'}}
+      style={{...styles.editorStyle, ...style}}
       theme="snow"
       value={value}
-      onChange={setValue}
+      onChange={onChangeText}
       modules={modules}
       formats={formats}
     />
   );
 }
+
+const styles = StyleSheet.create({
+  editorStyle: {minHeight: 300, width: '100%'},
+});

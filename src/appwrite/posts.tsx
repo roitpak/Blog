@@ -94,6 +94,7 @@ export class PostService {
       status: post.status,
       tldr: post.tldr,
       videoUrl: post.videoUrl,
+      content: post.content,
     };
     let postData = data;
     // If there is image upload it
@@ -159,6 +160,7 @@ export class PostService {
       status: post.status,
       tldr: post.tldr,
       videoUrl: post.videoUrl,
+      content: post.content,
     };
     try {
       return await this.databases.updateDocument(

@@ -21,6 +21,7 @@ import {Theme} from '../../constants/Types';
 import {useTheme} from '../../context/theme/useTheme';
 import strings from '../../constants/strings.json';
 import Icon from '../../assets/Icon';
+import {ID} from 'appwrite';
 // import Wrapper from '../common/Wrapper';
 
 interface AddPostModalProps {
@@ -50,10 +51,12 @@ function AddPostModal({showAddPost, close}: AddPostModalProps): JSX.Element {
   const addPost = async () => {
     setLoading(true);
     const data: Post = {
+      $id: ID.unique(),
       title: postTitle.toString(),
       category: category,
       uploadedBy: user?.$id.toString(),
       contents: [],
+      content: '',
     };
     await postService
       .createPost(data)

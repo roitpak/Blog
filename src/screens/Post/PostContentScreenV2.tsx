@@ -5,8 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {PostContent, Theme} from '../../constants/Types';
-import NewPostComponent from '../../components/post/NewPostComponent';
+import {Theme} from '../../constants/Types';
 import {BUTTON_TYPES} from '../../constants/Constants';
 import postService from '../../appwrite/posts';
 import {useModal} from '../../context/modal/useModal';
@@ -28,16 +27,15 @@ import {formatDate} from '../../helpers/functions';
 import {PostMetrics} from '../../appwrite/types/post_metrics';
 import postMetricsService from '../../appwrite/postMetrics';
 import RichTextEditor from '../../components/common/RichTextEditor';
+import {Post} from '../../appwrite/types/posts';
 
 function PostContentScreenV2({route}: any): JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-  const [post, setPost] = useState(route.params);
+  const [post, setPost] = useState<Post>(route.params);
   const [postMetrics, setPostMetrics] = useState<PostMetrics>();
-  const [newPostData, setNewPostData] = useState<PostContent | null>(null);
   const {isAdmin} = useUser();
 
   const [loading, setLoading] = useState(false);
-  const [updatingPost, setUpdatingPost] = useState(false);
 
   const {theme} = useTheme();
 
@@ -48,50 +46,24 @@ function PostContentScreenV2({route}: any): JSX.Element {
         setPostMetrics(response[0]);
       }
     });
+    getPost();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [route]);
-
-  const onChange = (value: PostContent) => {
-    setNewPostData(value);
-  };
 
   const {openModal} = useModal();
 
-  //   const onAdd = () => {
-  //     setNewPostData({
-  //       title: '',
-  //       subtitle: '',
-  //       content_type: TEXT_POST_TYPE,
-  //       content: '',
-  //       postID: post.$id,
-  //     });
-  //   };
-
-  const onSave = async () => {
-    if (newPostData) {
-      setUpdatingPost(true);
-      await postService
-        .createPostContent(newPostData, post)
-        .then(() => {
-          setUpdatingPost(false);
-          getPost();
-          setNewPostData(null);
-        })
-        .catch(err => {
-          setUpdatingPost(false);
-          if (err instanceof Error) {
-            openModal({title: err.message});
-          } else {
-            openModal({title: 'Unknown error occurred'});
-          }
-        });
-    }
+  const onChangePostContent = (value: string) => {
+    setPost(prev => ({
+      ...prev,
+      content: value,
+    }));
   };
 
   const getPost = async () => {
     await postService
       .getPost(post.$id)
       .then(response => {
-        setPost(response);
+        setPost(response as unknown as Post);
       })
       .catch(err => {
         if (err instanceof Error) {
@@ -102,12 +74,24 @@ function PostContentScreenV2({route}: any): JSX.Element {
       });
   };
 
+  const onPressSavePost = async () => {
+    setLoading(true);
+    await postService
+      .updatePost(post?.$id ?? '', post)
+      .then(() => {
+        console.log('Post saved successfully');
+        // setPost(response as unknown as Post);
+      })
+      .catch(err => openModal({title: err?.message}));
+    setLoading(false);
+  };
+
   const onPostStatusChange = async (status: Status) => {
     setLoading(true);
     await postService
       .updatePost(post?.$id ?? '', {...post, status: status})
       .then(response => {
-        setPost(response);
+        setPost(response as unknown as Post);
       })
       .catch(err => openModal({title: err?.message}));
     setLoading(false);
@@ -118,7 +102,7 @@ function PostContentScreenV2({route}: any): JSX.Element {
     await postService
       .updatePost(post?.$id ?? '', {...post, videoUrl: url})
       .then(response => {
-        setPost(response);
+        setPost(response as unknown as Post);
       })
       .catch(err => openModal({title: err?.message}));
     setLoading(false);
@@ -130,7 +114,7 @@ function PostContentScreenV2({route}: any): JSX.Element {
       .updatePost(post?.$id ?? '', {...post, tldr: value})
       .then(response => {
         console.log(response);
-        setPost(response);
+        setPost(response as unknown as Post);
       })
       .catch(err => openModal({title: err?.message}));
     setLoading(false);
@@ -142,7 +126,7 @@ function PostContentScreenV2({route}: any): JSX.Element {
       .updatePost(post?.$id ?? '', {...post, githubUrl: value})
       .then(response => {
         console.log(response);
-        setPost(response);
+        setPost(response as unknown as Post);
       })
       .catch(err => openModal({title: err?.message}));
     setLoading(false);
@@ -172,7 +156,10 @@ function PostContentScreenV2({route}: any): JSX.Element {
           <View style={styles(theme).timeAndViews}>
             <CustomText
               style={styles(theme).date}
-              title={' · ' + formatDate(new Date(post?.$createdAt))}
+              title={
+                ' · ' +
+                formatDate(new Date(post?.$createdAt as unknown as string))
+              }
               type={'p2'}
             />
             {postMetrics && (
@@ -205,26 +192,32 @@ function PostContentScreenV2({route}: any): JSX.Element {
       <GithubLink
         loading={loading}
         onChange={newUrl => onGithubURLUpdate(newUrl)}
-        url={post.githubUrl}
+        url={post.githubUrl as unknown as string}
       />
       <VideoUrlComponent
         loading={loading}
-        url={post?.videoUrl}
+        url={post?.videoUrl as unknown as string}
         onUrlChange={(url: string) => onPostVideoUrlChange(url)}
       />
-      {newPostData && (
-        <NewPostComponent
-          loading={updatingPost}
-          newPost={newPostData}
-          onChange={onChange}
-          onSave={onSave}
-        />
-      )}
-      <RichTextEditor />
+      <RichTextEditor onChangeText={onChangePostContent} value={post.content} />
       <TLDRComponent
         loading={loading}
         onChange={value => onPostTLDRUpdate(value)}
-        content={post?.tldr}
+        content={post?.tldr as unknown as string}
+      />
+      <Button
+        buttonStyle={styles(theme).buttonStyle}
+        title="Save"
+        type={BUTTON_TYPES.filled}
+        onPress={onPressSavePost}
+        loading={loading}
+        iconRight={
+          <Icon
+            icon="checkmark"
+            size={theme.sizes.large}
+            color={theme.colors.button_text_filled}
+          />
+        }
       />
       <Button
         buttonStyle={styles(theme).buttonStyle}
@@ -255,6 +248,7 @@ const styles = (theme: Theme) =>
     },
     buttonStyle: {
       alignSelf: 'center',
+      marginBottom: theme.sizes.medium,
     },
     indicator: {
       marginTop: theme.sizes.medium,

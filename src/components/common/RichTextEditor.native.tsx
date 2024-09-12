@@ -1,9 +1,20 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import {StyleSheet, Text, View, ViewStyle} from 'react-native';
 import {actions, RichEditor, RichToolbar} from 'react-native-pell-rich-editor';
 
-export default function RichTextEditor() {
+interface RichTextEditorProps {
+  value: string;
+  onChangeText: (text: string) => void;
+  style?: ViewStyle;
+}
+
+export default function RichTextEditor({
+  value,
+  onChangeText,
+  style,
+}: RichTextEditorProps) {
   const richText = React.useRef<RichEditor>(null);
+
   const handleHead = ({tintColor}: {tintColor: string}) => (
     <Text style={{color: tintColor}}>H1</Text>
   );
@@ -16,17 +27,13 @@ export default function RichTextEditor() {
     <Text style={{color: tintColor}}>H3</Text>
   );
 
-  const handleHead5 = ({tintColor}: {tintColor: string}) => (
-    <Text style={{color: tintColor}}>H5</Text>
-  );
-
   return (
-    <View style={{width: '100%'}}>
+    <View style={[styles.editorStyle, style]}>
       <RichEditor
         ref={richText}
-        onChange={descriptionText => {
-          console.log('descriptionText:', descriptionText);
-        }}
+        initialContentHTML={value}
+        onChange={onChangeText}
+        style={styles.richEditor}
       />
       <RichToolbar
         editor={richText}
@@ -43,6 +50,7 @@ export default function RichTextEditor() {
           [actions.heading2]: handleHead2,
           [actions.heading3]: handleHead3,
         }}
+        style={styles.toolbar}
       />
       <RichToolbar
         editor={richText}
@@ -53,7 +61,14 @@ export default function RichTextEditor() {
           actions.code,
           actions.insertLink,
         ]}
+        style={styles.toolbar}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  editorStyle: {width: '100%', flex: 1},
+  richEditor: {flex: 1},
+  toolbar: {backgroundColor: '#f5f5f5'},
+});
