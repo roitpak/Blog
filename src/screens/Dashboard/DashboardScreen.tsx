@@ -106,7 +106,6 @@ function DashboardScreen(): JSX.Element {
   }, [navigation]);
 
   const getPosts = async () => {
-    console.log('gettingPosts');
     setLoading(true);
     await postService
       .getPosts(isAdmin)

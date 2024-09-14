@@ -28,6 +28,7 @@ import {PostMetrics} from '../../appwrite/types/post_metrics';
 import postMetricsService from '../../appwrite/postMetrics';
 import RichTextEditor from '../../components/common/RichTextEditor';
 import {Post} from '../../appwrite/types/posts';
+// import WebView from 'react-native-webview';
 
 function PostContentScreenV2({route}: any): JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -137,6 +138,24 @@ function PostContentScreenV2({route}: any): JSX.Element {
     openModal({title: 'Link Copied, You can share it now.'});
   };
 
+  const returnHtmlContent = (content: any) => {
+    return `
+    <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #eaeaea; }
+        pre { background-color: #333; color: #fff; padding: 15px; border-radius: 10px; }
+        code { font-family: monospace; color: #ff6347; }
+      </style>
+      </head>
+      <body>
+        ${content}
+      </body>
+      </html>
+    `;
+  };
+
   return (
     <Wrapper style={styles(theme).container}>
       <View style={styles(theme).titleContainer}>
@@ -198,6 +217,14 @@ function PostContentScreenV2({route}: any): JSX.Element {
         loading={loading}
         url={post?.videoUrl as unknown as string}
         onUrlChange={(url: string) => onPostVideoUrlChange(url)}
+      />
+      {/* <WebView
+        originWhitelist={['*']}
+        source={{html: returnHtmlContent(post.content)}}
+        style={{flex: 1, height: 200, width: 300}}
+      /> */}
+      <div
+        dangerouslySetInnerHTML={{__html: returnHtmlContent(post.content)}}
       />
       <RichTextEditor onChangeText={onChangePostContent} value={post.content} />
       <TLDRComponent
