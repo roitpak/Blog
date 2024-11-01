@@ -3,6 +3,7 @@ import {StyleSheet} from 'react-native';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import postService from '../../appwrite/posts';
+import {useModal} from '../../context/modal/useModal';
 
 interface RichTextEditorProps {
   value: string;
@@ -17,6 +18,7 @@ export default function RichTextEditor({
 }: RichTextEditorProps) {
   const quillRef = useRef<ReactQuill | null>(null);
   const inputFileRef = useRef<HTMLInputElement | null>(null);
+  const {openModal, closeModal} = useModal();
 
   useEffect(() => {
     // @ts-ignore
@@ -29,12 +31,18 @@ export default function RichTextEditor({
   }, [quillRef]);
 
   const onImagePicked = async (event: ChangeEvent<HTMLInputElement>) => {
-    console.log(event?.target?.files?.[0]);
+    if (event?.target?.files?.[0] && event?.target?.files?.[0].size > 500000) {
+      openModal({
+        title: 'Image too large',
+        subTitle: 'Image size should not exceed 500KB',
+        buttons: [{label: 'Ok', onClick: () => closeModal()}],
+      });
+      return;
+    }
     const response = (await postService.uploadFile(
       event?.target?.files?.[0],
     )) as any;
     const imageUrl = postService.getFilePreview(response?.$id);
-    console.log('🚀 ~ onImagePicked ~ imageUrl:', imageUrl);
     imageUrl && insertImage(imageUrl);
   };
 
