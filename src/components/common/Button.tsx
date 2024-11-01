@@ -18,6 +18,7 @@ interface ButtonProps {
   onPress: () => void;
   loading?: boolean;
   disabled?: boolean;
+  iconLeft?: ReactNode;
   iconRight?: ReactNode;
   buttonStyle?: ViewStyle;
   textStyle?: TextStyle;
@@ -28,6 +29,7 @@ function Button({
   title,
   onPress,
   loading, //is not shown when disabled
+  iconLeft,
   iconRight,
   buttonStyle,
   textStyle,
@@ -45,17 +47,17 @@ function Button({
         };
       case BUTTON_TYPES.outlined:
         return {
-          container: styles(theme, disabled).outlinedStyleContainer,
+          container: {...styles(theme, disabled).outlinedStyleContainer},
           text: styles(theme, disabled).outlinedStyleText,
         };
       case BUTTON_TYPES.text:
         return {
-          container: styles(theme, disabled).textStyleContainer,
+          container: {...styles(theme, disabled).textStyleContainer},
           text: styles(theme, disabled).textStyleText,
         };
       default:
         return {
-          container: styles(theme, disabled).filledStyleContainer,
+          container: {...styles(theme, disabled).filledStyleContainer},
           text: styles(theme, disabled).filledStyleText,
         };
     }
@@ -87,6 +89,7 @@ function Button({
           />
         ) : (
           <View style={styles(theme).contentStyle}>
+            {iconLeft}
             {title && (
               <Text style={[returnStyle().text, textStyle]}>{title}</Text>
             )}

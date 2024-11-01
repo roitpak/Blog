@@ -164,6 +164,22 @@ function PostContentScreenV2({route}: any): JSX.Element {
           </TouchableOpacity>
           {isAdmin && (
             <View style={styles(theme).headerRight}>
+              <View>
+                <Button
+                  buttonStyle={styles(theme).saveButtonStyle}
+                  title="Share"
+                  iconLeft={
+                    <Icon
+                      containerStyle={styles(theme).shareIconContainerStyle}
+                      icon={'share'}
+                      size={theme.sizes.medium}
+                      color={theme.colors.button_text}
+                    />
+                  }
+                  type={BUTTON_TYPES.outlined}
+                  onPress={onPressShare}
+                />
+              </View>
               {isEditing && (
                 <View>
                   <Button
@@ -279,19 +295,6 @@ function PostContentScreenV2({route}: any): JSX.Element {
           content={post?.tldr as unknown as string}
         />
       )}
-      <Button
-        buttonStyle={styles(theme).buttonStyle}
-        title="Share"
-        type={BUTTON_TYPES.filled}
-        onPress={onPressShare}
-        iconRight={
-          <Icon
-            icon="share2"
-            size={theme.sizes.large}
-            color={theme.colors.button_text_filled}
-          />
-        }
-      />
     </Wrapper>
   );
 }
@@ -361,6 +364,9 @@ const styles = (theme: Theme) =>
       width: 80,
       alignItems: 'flex-end',
       borderRadius: theme.sizes.border_radius,
+    },
+    shareIconContainerStyle: {
+      padding: 0,
     },
   });
 
