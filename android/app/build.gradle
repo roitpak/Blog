@@ -97,6 +97,12 @@ android {
             keyPassword System.getenv("BITRISEIO_ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD")
             storeFile file(System.getenv("HOME") + "/android/app/rohitBlog.keystore")
             storePassword System.getenv("BITRISEIO_ANDROID_KEYSTORE_PASSWORD")
+            if (project.hasProperty('BITRISEIO_ANDROID_KEYSTORE_URL')) {
+                storeFile file(BITRISEIO_ANDROID_KEYSTORE_URL)
+                storePassword BITRISEIO_ANDROID_KEYSTORE_PASSWORD
+                keyAlias BITRISEIO_ANDROID_KEYSTORE_ALIAS
+                keyPassword BITRISEIO_ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD
+            }
         }
     }
     buildTypes {
