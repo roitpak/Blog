@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import {ParamListBase, useNavigation} from '@react-navigation/native';
-import {addPostScreen} from '../../constants/Screens';
+import {postContentScreenV2} from '../../constants/Screens';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useUser} from '../../context/user/useUser';
 import postService from '../../appwrite/posts';
@@ -21,7 +21,6 @@ import {Theme} from '../../constants/Types';
 import {useTheme} from '../../context/theme/useTheme';
 import strings from '../../constants/strings.json';
 import Icon from '../../assets/Icon';
-// import Wrapper from '../common/Wrapper';
 
 interface AddPostModalProps {
   showAddPost: boolean;
@@ -54,13 +53,14 @@ function AddPostModal({showAddPost, close}: AddPostModalProps): JSX.Element {
       category: category,
       uploadedBy: user?.$id.toString(),
       contents: [],
+      content: '',
     };
     await postService
       .createPost(data)
       .then(response => {
         closeModal();
         if (response) {
-          navigation.navigate(addPostScreen, response);
+          navigation.navigate(postContentScreenV2, response);
         }
       })
       .catch(err => {

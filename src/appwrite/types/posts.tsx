@@ -9,8 +9,9 @@ export interface Post {
   contents: string[];
   shareUrl?: URL;
   likes?: number;
-  githubUrl?: URL;
+  githubUrl?: string;
   tldr?: string;
-  videoUrl?: URL;
+  videoUrl?: string;
   $createdAt?: string;
+  content: string;
 }

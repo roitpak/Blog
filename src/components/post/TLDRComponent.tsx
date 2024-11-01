@@ -82,7 +82,7 @@ const styles = (theme: Theme) =>
   StyleSheet.create({
     tldrContent: {
       padding: theme.sizes.extra_small,
-      marginVertical: theme.sizes.extra_extra_large,
+      marginTop: theme.sizes.extra_extra_large,
       // borderWidth: 1,
       borderRadius: theme.sizes.border_radius,
       // borderColor: theme.colors.button_border,
