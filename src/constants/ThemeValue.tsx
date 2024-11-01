@@ -54,6 +54,7 @@ export const DarkTheme: Theme = {
     button_disabled_text: '#424242',
     links: '#6c757d',
     accent_color: '#28a745',
+    list_border: '#4a4a4a',
     gradient_colors: ['#424242', '#3b3a3a', '#2E2E2E'],
     ...defaultColors,
   },
@@ -74,6 +75,7 @@ export const LightTheme: Theme = {
     links: '#3d9bff',
     accent_color: '#28a745',
     gradient_colors: ['#f5f5f5', '#cfcccc', '#bdbbbb'],
+    list_border: '#b0b0b0',
     ...defaultColors,
   },
 };
