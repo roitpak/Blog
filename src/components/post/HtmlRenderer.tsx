@@ -66,6 +66,11 @@ function HtmlRenderer({content}: HtmlRendererProps): JSX.Element {
             color: ${theme.colors.text_color};
             text-decoration: underline;
             }
+            img {
+              width: 100%;
+              height: auto;
+              max-width: 100%;
+            }
           </style>
           </head>
           <body>

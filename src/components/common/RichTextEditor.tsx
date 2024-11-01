@@ -1,7 +1,8 @@
-import React, {useEffect, useRef} from 'react';
+import React, {ChangeEvent, useEffect, useRef} from 'react';
 import {StyleSheet} from 'react-native';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import postService from '../../appwrite/posts';
 
 interface RichTextEditorProps {
   value: string;
@@ -14,17 +15,39 @@ export default function RichTextEditor({
   onChangeText,
   style,
 }: RichTextEditorProps) {
-  const quillRef = useRef(null);
+  const quillRef = useRef<ReactQuill | null>(null);
+  const inputFileRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     // @ts-ignore
     quillRef.current
       .getEditor()
       .getModule('toolbar')
-      .addHandler('image', () => {
-        console.log('Image loaded');
+      .addHandler('image', async () => {
+        inputFileRef?.current?.click();
       });
   }, [quillRef]);
+
+  const onImagePicked = async (event: ChangeEvent<HTMLInputElement>) => {
+    console.log(event?.target?.files?.[0]);
+    const response = (await postService.uploadFile(
+      event?.target?.files?.[0],
+    )) as any;
+    const imageUrl = postService.getFilePreview(response?.$id);
+    console.log('🚀 ~ onImagePicked ~ imageUrl:', imageUrl);
+    imageUrl && insertImage(imageUrl);
+  };
+
+  const insertImage = (imageUrl: string) => {
+    const editor = quillRef.current?.getEditor();
+
+    if (editor) {
+      const range = editor.getSelection();
+      if (range) {
+        editor.insertEmbed(range.index, 'image', imageUrl);
+      }
+    }
+  };
 
   const modules = {
     toolbar: {
@@ -52,15 +75,34 @@ export default function RichTextEditor({
   ];
 
   return (
-    <ReactQuill
-      ref={quillRef}
-      style={{...styles.editorStyle, ...style}}
-      theme="snow"
-      value={value}
-      onChange={onChangeText}
-      modules={modules}
-      formats={formats}
-    />
+    <>
+      <ReactQuill
+        ref={quillRef}
+        style={{...styles.editorStyle, ...style}}
+        theme="snow"
+        value={value}
+        onChange={onChangeText}
+        modules={modules}
+        formats={formats}
+      />
+      <input
+        // eslint-disable-next-line react-native/no-inline-styles
+        style={{display: 'none'}}
+        ref={inputFileRef}
+        type="file"
+        accept="image/*"
+        onChange={onImagePicked}
+      />
+      <style>
+        {`
+        .ql-editor img {
+          width: 100%;      /* Set width to 100% to make it responsive */
+          height: auto;     /* Maintain aspect ratio */
+          max-width: 100%;  /* Prevent the image from exceeding its container */
+        }
+      `}
+      </style>
+    </>
   );
 }
 
