@@ -7,8 +7,10 @@ import {ADMIN_LABEL} from '../../constants/Constants';
 export const UserPrvider: FC<PropsWithChildren> = ({children}) => {
   const [userInfo, setUserInfo] = useState<Models.User<Object>>();
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isAdminLoading, setIsAdminLoading] = useState<boolean>(false);
 
   const getUser = async () => {
+    setIsAdminLoading(true);
     await authService
       .getCurrentUser()
       .then(user => {
@@ -16,10 +18,11 @@ export const UserPrvider: FC<PropsWithChildren> = ({children}) => {
           setIsAdmin(true);
         }
         setUserInfo(user);
+        setIsAdminLoading(false);
       })
       .catch(err => {
+        setIsAdminLoading(false);
         console.log(err);
-        // openModal({title: err.message});
       });
   };
   const setLogin = () => {
@@ -43,6 +46,7 @@ export const UserPrvider: FC<PropsWithChildren> = ({children}) => {
         isAdmin,
         setLogin,
         logout,
+        isAdminLoading,
       }}>
       {children}
     </UserContext.Provider>

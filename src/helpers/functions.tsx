@@ -9,23 +9,23 @@ const myConfig = Platform.OS === 'web' ? process.env : Config;
 
 export function formatDate(date: Date) {
   const months = [
-    'January',
-    'February',
-    'March',
-    'April',
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
     'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sept',
+    'Oct',
+    'Nov',
+    'Dec',
   ];
 
   const day = String(date.getDate()).padStart(2, '0');
   const month = months[date.getMonth()];
-  const year = date.getFullYear();
+  const year = date.getFullYear().toString().slice(1);
 
   return `${month} ${day}, ${year}`;
 }

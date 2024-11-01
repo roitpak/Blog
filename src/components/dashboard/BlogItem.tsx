@@ -10,8 +10,6 @@ import {Post} from '../../appwrite/types/posts';
 import {formatDate} from '../../helpers/functions';
 import strings from '../../constants/strings.json';
 import Icon from '../../assets/Icon';
-import {useUser} from '../../context/user/useUser';
-import PostStatusButton from '../post/PostStatusButton';
 import Status from '../post/enum/PostStatusEnum';
 
 interface AddPostModalProps {
@@ -20,7 +18,7 @@ interface AddPostModalProps {
   loading: boolean;
 }
 
-const BlogItem = ({item, onPostStatusChange, loading}: AddPostModalProps) => {
+const BlogItem = ({item}: AddPostModalProps) => {
   const {theme} = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const onPressItem = () => {
@@ -30,8 +28,6 @@ const BlogItem = ({item, onPostStatusChange, loading}: AddPostModalProps) => {
       navigation.navigate(postContentScreenV2, item);
     }
   };
-
-  const {isAdmin} = useUser();
 
   return (
     <TouchableOpacity onPress={onPressItem} style={styles(theme).container}>
@@ -70,32 +66,29 @@ const BlogItem = ({item, onPostStatusChange, loading}: AddPostModalProps) => {
           color={theme.colors.button_text}
         />
       </View>
-      {isAdmin && (
-        <PostStatusButton
-          loading={loading}
-          onChange={(status: Status) => onPostStatusChange(item, status)}
-          status={item.status ? item.status : Status.pending}
-        />
-      )}
     </TouchableOpacity>
   );
 };
 const styles = (theme: Theme) =>
   StyleSheet.create({
     container: {
-      marginTop: theme.sizes.large,
+      marginTop: theme.sizes.extra_large,
+      borderBottomColor: theme.colors.list_border,
+      borderBottomWidth: 1,
+      paddingBottom: theme.sizes.extra_small,
     },
     titleContainer: {
       marginBottom: theme.sizes.extra_extra_small,
     },
     category: {
-      padding: theme.sizes.extra_small,
-      borderColor: theme.colors.button_border,
-      borderWidth: 1.5,
-      borderRadius: 2,
+      paddingHorizontal: theme.sizes.extra_small,
+      paddingVertical: theme.sizes.extra_extra_small,
+      borderColor: theme.colors.list_border,
+      borderWidth: 1,
+      borderRadius: theme.sizes.border_radius,
       alignContent: 'center',
       justifyContent: 'center',
-      marginRight: theme.sizes.extra_extra_small,
+      marginRight: theme.sizes.extra_small,
     },
     categoryContainer: {
       flexDirection: 'row',
