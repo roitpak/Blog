@@ -38,7 +38,7 @@ import {getValueFromUrl} from '../../helpers/functions';
 
 function DashboardScreen(): JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-  const {user, isAdmin, logout} = useUser();
+  const {user, isAdmin, logout, isAdminLoading} = useUser();
   const [posts, setPosts] = useState<Post[]>([]);
   const {openModal, closeModal} = useModal();
   const {theme} = useTheme();
@@ -67,13 +67,18 @@ function DashboardScreen(): JSX.Element {
   };
 
   useEffect(() => {
+    if (isAdminLoading) {
+      return;
+    }
+    getPosts();
     const unsubscribe = navigation.addListener('focus', () => {
       getPosts();
     });
-    getPosts();
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
     return unsubscribe;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAdmin]);
+  }, [isAdmin, isAdminLoading]);
 
   React.useEffect(() => {
     Linking.getInitialURL().then(async (url: string | null) => {
@@ -99,14 +104,6 @@ function DashboardScreen(): JSX.Element {
         //http://rohitpakhrin.com.np/66098fb547f3dad78635
       }
     });
-
-    const unsubscribe = navigation.addListener('focus', () => {
-      getPosts();
-    });
-
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return unsubscribe;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigation]);
 
   const getPosts = async () => {
@@ -144,7 +141,10 @@ function DashboardScreen(): JSX.Element {
     <Wrapper
       style={styles(theme).mainContainer}
       refreshControl={
-        <RefreshControl refreshing={loading} onRefresh={getPosts} />
+        <RefreshControl
+          refreshing={loading || isAdminLoading}
+          onRefresh={getPosts}
+        />
       }>
       <AddPostModal
         showAddPost={showAddPost}
@@ -163,7 +163,6 @@ function DashboardScreen(): JSX.Element {
           />
         </View>
       </View>
-      {/* <Markdown>this is a test single line md</Markdown> */}
       <CustomText
         style={styles(theme).introMessageStyle}
         title={strings.dashboardScreenWelcomeSub}
@@ -184,10 +183,10 @@ function DashboardScreen(): JSX.Element {
           <Button title={'Add Post'} onPress={addPost} />
         </View>
       )}
-      {posts.length === 0 && !loading && (
+      {posts.length === 0 && !loading && !isAdminLoading && (
         <CustomText title={strings.noContent} type={'h2'} />
       )}
-      {loading && (
+      {loading && isAdminLoading && (
         <ActivityIndicator
           style={styles(theme).indicator}
           size={'small'}

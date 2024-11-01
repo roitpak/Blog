@@ -1,14 +1,18 @@
 import React from 'react';
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, TouchableOpacity, View, ViewStyle} from 'react-native';
 import IcoMoon, {IconProps} from 'react-icomoon';
 import iconSet from './selection.json';
 import {Svg, Path} from 'react-native-svg';
 
-const Icon = (props: IconProps & {onPress?: () => void}) => {
+const Icon = (
+  props: IconProps & {onPress?: () => void; containerStyle?: ViewStyle},
+) => {
   const {onPress, ...iconProps} = props;
 
   return onPress ? (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
+    <TouchableOpacity
+      style={[styles.container, props.containerStyle]}
+      onPress={onPress}>
       <IcoMoon
         native
         SvgComponent={Svg}
@@ -18,7 +22,7 @@ const Icon = (props: IconProps & {onPress?: () => void}) => {
       />
     </TouchableOpacity>
   ) : (
-    <View style={styles.container}>
+    <View style={[styles.container, props.containerStyle]}>
       <IcoMoon
         native
         SvgComponent={Svg}

@@ -53,6 +53,7 @@ export interface Colors {
   blackOpacity06: string;
   blackOpacity08: string;
   modal_background_color: string;
+  list_border: string;
 }
 export interface Theme {
   sizes: Sizes;

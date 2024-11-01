@@ -9,6 +9,7 @@ import {
   loginScreen,
   privacyScreen,
   verificationEmailScreen,
+  postContentScreenV2,
 } from '../constants/Screens';
 import SelfInfoScreen from '../screens/Self/SelfInfoScreen';
 import LoginScreen from '../screens/Login/LoginScreen';
@@ -23,6 +24,7 @@ import {getGeoLocation, getUserUniqueID} from '../helpers/functions';
 import loginDataService from '../appwrite/login';
 import {Platform} from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
+import PostContentScreenV2 from '../screens/Post/PostContentScreenV2';
 
 const Stack = createNativeStackNavigator();
 
@@ -78,6 +80,10 @@ function MainStackScreen(): JSX.Element {
         <Stack.Screen name={selfInfoScreen} component={SelfInfoScreen} />
         <Stack.Screen name={loginScreen} component={LoginScreen} />
         <Stack.Screen name={addPostScreen} component={PostInfoScreen} />
+        <Stack.Screen
+          name={postContentScreenV2}
+          component={PostContentScreenV2}
+        />
         <Stack.Screen name={privacyScreen} component={PrivacyScreen} />
         <Stack.Screen name={contactScreen} component={ContactScreen} />
         <Stack.Screen

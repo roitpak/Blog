@@ -91,7 +91,7 @@ function PostContentScreen({route}: any): JSX.Element {
 
   const getPost = async () => {
     await postService
-      .getPost(post.$id)
+      .getPost(post?.$id)
       .then(response => {
         setPost(response);
       })
