@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import WebView from 'react-native-webview';
-import {Theme} from '../../constants/Types';
 import {useTheme} from '../../context/theme/useTheme';
 
 interface HtmlRendererProps {
@@ -93,9 +92,9 @@ function HtmlRenderer({content}: HtmlRendererProps): JSX.Element {
         automaticallyAdjustContentInsets={true}
         originWhitelist={['*']}
         source={{html: returnHtmlContent()}}
-        style={styles(theme).container}
+        style={styles().container}
         onMessage={event => {
-          setWebViewHeight(parseInt(event.nativeEvent.data, 10) / 4);
+          setWebViewHeight(parseInt(event.nativeEvent.data, 10) / 3.5);
         }}
         javaScriptEnabled={true}
         injectedJavaScript={webViewScript}
@@ -105,7 +104,7 @@ function HtmlRenderer({content}: HtmlRendererProps): JSX.Element {
   );
 }
 
-const styles = (theme: Theme) =>
+const styles = () =>
   StyleSheet.create({
     container: {
       flex: 1,

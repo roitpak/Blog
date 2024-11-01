@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
 import {StyleSheet} from 'react-native';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -14,13 +14,27 @@ export default function RichTextEditor({
   onChangeText,
   style,
 }: RichTextEditorProps) {
+  const quillRef = useRef(null);
+
+  useEffect(() => {
+    // @ts-ignore
+    quillRef.current
+      .getEditor()
+      .getModule('toolbar')
+      .addHandler('image', () => {
+        console.log('Image loaded');
+      });
+  }, [quillRef]);
+
   const modules = {
-    toolbar: [
-      [{header: [1, 2, 3, false]}],
-      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-      [{list: 'ordered'}, {list: 'bullet'}],
-      ['link', 'code-block'],
-    ],
+    toolbar: {
+      container: [
+        [{header: [1, 2, 3, false]}],
+        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+        [{list: 'ordered'}, {list: 'bullet'}],
+        ['link', 'image', 'code-block'],
+      ],
+    },
   };
 
   const formats = [
@@ -34,10 +48,12 @@ export default function RichTextEditor({
     'bullet',
     'link',
     'code-block',
+    'image',
   ];
 
   return (
     <ReactQuill
+      ref={quillRef}
       style={{...styles.editorStyle, ...style}}
       theme="snow"
       value={value}

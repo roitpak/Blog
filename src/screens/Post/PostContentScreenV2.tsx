@@ -280,6 +280,13 @@ function PostContentScreenV2({route}: any): JSX.Element {
           onUrlChange={(url: string) => onPostVideoUrlChange(url)}
         />
       )}
+      {(post?.tldr || isEditing) && (
+        <TLDRComponent
+          loading={loading}
+          onChange={value => onPostTLDRUpdate(value)}
+          content={post?.tldr as unknown as string}
+        />
+      )}
       {isEditing ? (
         <RichTextEditor
           onChangeText={onChangePostContent}
@@ -287,13 +294,6 @@ function PostContentScreenV2({route}: any): JSX.Element {
         />
       ) : (
         <HtmlRenderer content={post.content} />
-      )}
-      {(post?.tldr || isEditing) && (
-        <TLDRComponent
-          loading={loading}
-          onChange={value => onPostTLDRUpdate(value)}
-          content={post?.tldr as unknown as string}
-        />
       )}
     </Wrapper>
   );

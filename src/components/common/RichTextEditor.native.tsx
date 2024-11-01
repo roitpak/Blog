@@ -30,9 +30,12 @@ export default function RichTextEditor({
   return (
     <View style={[styles.editorStyle, style]}>
       <RichEditor
+        allowFileAccess={true}
         ref={richText}
         initialContentHTML={value}
         onChange={onChangeText}
+        allowFileAccessFromFileURLs={true}
+        allowUniversalAccessFromFileURLs={true}
         style={styles.richEditor}
       />
       <RichToolbar
@@ -53,6 +56,7 @@ export default function RichTextEditor({
         style={styles.toolbar}
       />
       <RichToolbar
+        onPressAddImage={() => console.log('image added')}
         editor={richText}
         actions={[
           actions.blockquote,
@@ -60,6 +64,7 @@ export default function RichTextEditor({
           actions.insertBulletsList,
           actions.code,
           actions.insertLink,
+          actions.insertImage,
         ]}
         style={styles.toolbar}
       />
