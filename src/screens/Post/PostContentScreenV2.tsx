@@ -28,7 +28,7 @@ import {PostMetrics} from '../../appwrite/types/post_metrics';
 import postMetricsService from '../../appwrite/postMetrics';
 import RichTextEditor from '../../components/common/RichTextEditor';
 import {Post} from '../../appwrite/types/posts';
-// import WebView from 'react-native-webview';
+import HtmlRenderer from '../../components/post/HtmlRenderer';
 
 function PostContentScreenV2({route}: any): JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -37,6 +37,10 @@ function PostContentScreenV2({route}: any): JSX.Element {
   const {isAdmin} = useUser();
 
   const [loading, setLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(
+    !post.content || post.content.length === 0 ? true : false,
+  );
+  const [showMenu, setShowMenu] = useState(false);
 
   const {theme} = useTheme();
 
@@ -61,6 +65,9 @@ function PostContentScreenV2({route}: any): JSX.Element {
   };
 
   const getPost = async () => {
+    if (!post.$id) {
+      return;
+    }
     await postService
       .getPost(post.$id)
       .then(response => {
@@ -77,6 +84,7 @@ function PostContentScreenV2({route}: any): JSX.Element {
 
   const onPressSavePost = async () => {
     setLoading(true);
+    setIsEditing(false);
     await postService
       .updatePost(post?.$id ?? '', post)
       .then(() => {
@@ -138,34 +146,68 @@ function PostContentScreenV2({route}: any): JSX.Element {
     openModal({title: 'Link Copied, You can share it now.'});
   };
 
-  const returnHtmlContent = (content: any) => {
-    return `
-    <!DOCTYPE html>
-      <html>
-      <head>
-        <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background-color: #eaeaea; }
-        pre { background-color: #333; color: #fff; padding: 15px; border-radius: 10px; }
-        code { font-family: monospace; color: #ff6347; }
-      </style>
-      </head>
-      <body>
-        ${content}
-      </body>
-      </html>
-    `;
+  const onPressEdit = () => {
+    setIsEditing(true);
+    setShowMenu(false);
   };
 
   return (
-    <Wrapper style={styles(theme).container}>
+    <Wrapper
+      contentAboveScrollable={
+        <View style={styles(theme).header}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Icon
+              icon={'arrow-left2'}
+              size={theme.sizes.large}
+              color={theme.colors.text_color}
+            />
+          </TouchableOpacity>
+          {isAdmin && (
+            <View style={styles(theme).headerRight}>
+              {isEditing && (
+                <View>
+                  <Button
+                    buttonStyle={styles(theme).saveButtonStyle}
+                    title="Save"
+                    type={BUTTON_TYPES.filled}
+                    onPress={onPressSavePost}
+                    loading={loading}
+                  />
+                </View>
+              )}
+              {post.status !== Status.published && (
+                <View>
+                  <Button
+                    buttonStyle={styles(theme).saveButtonStyle}
+                    title="Publish"
+                    type={BUTTON_TYPES.filled}
+                    onPress={() => onPostStatusChange(Status.published)}
+                    loading={loading}
+                  />
+                </View>
+              )}
+              <View>
+                <TouchableOpacity onPress={() => setShowMenu(!showMenu)}>
+                  <Icon
+                    icon={'menu'}
+                    size={theme.sizes.large}
+                    color={theme.colors.text_color}
+                  />
+                </TouchableOpacity>
+                {showMenu && (
+                  <View style={styles(theme).menuStyle}>
+                    <TouchableOpacity onPress={onPressEdit}>
+                      <CustomText title={'Edit'} type={'p1'} />
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+            </View>
+          )}
+        </View>
+      }
+      style={styles(theme).container}>
       <View style={styles(theme).titleContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon
-            icon={'arrow-left2'}
-            size={theme.sizes.extra_extra_large}
-            color={theme.colors.text_color}
-          />
-        </TouchableOpacity>
         <View style={styles(theme).titleWithTime}>
           <CustomText
             style={styles(theme).postTitle}
@@ -208,44 +250,35 @@ function PostContentScreenV2({route}: any): JSX.Element {
           status={post.status ? post.status : Status.pending}
         />
       )}
-      <GithubLink
-        loading={loading}
-        onChange={newUrl => onGithubURLUpdate(newUrl)}
-        url={post.githubUrl as unknown as string}
-      />
-      <VideoUrlComponent
-        loading={loading}
-        url={post?.videoUrl as unknown as string}
-        onUrlChange={(url: string) => onPostVideoUrlChange(url)}
-      />
-      {/* <WebView
-        originWhitelist={['*']}
-        source={{html: returnHtmlContent(post.content)}}
-        style={{flex: 1, height: 200, width: 300}}
-      /> */}
-      <div
-        dangerouslySetInnerHTML={{__html: returnHtmlContent(post.content)}}
-      />
-      <RichTextEditor onChangeText={onChangePostContent} value={post.content} />
-      <TLDRComponent
-        loading={loading}
-        onChange={value => onPostTLDRUpdate(value)}
-        content={post?.tldr as unknown as string}
-      />
-      <Button
-        buttonStyle={styles(theme).buttonStyle}
-        title="Save"
-        type={BUTTON_TYPES.filled}
-        onPress={onPressSavePost}
-        loading={loading}
-        iconRight={
-          <Icon
-            icon="checkmark"
-            size={theme.sizes.large}
-            color={theme.colors.button_text_filled}
-          />
-        }
-      />
+      {(post.githubUrl || isEditing) && (
+        <GithubLink
+          loading={loading}
+          onChange={newUrl => onGithubURLUpdate(newUrl)}
+          url={post.githubUrl as unknown as string}
+        />
+      )}
+      {(post?.videoUrl || isEditing) && (
+        <VideoUrlComponent
+          loading={loading}
+          url={post?.videoUrl as unknown as string}
+          onUrlChange={(url: string) => onPostVideoUrlChange(url)}
+        />
+      )}
+      {isEditing ? (
+        <RichTextEditor
+          onChangeText={onChangePostContent}
+          value={post.content}
+        />
+      ) : (
+        <HtmlRenderer content={post.content} />
+      )}
+      {(post?.tldr || isEditing) && (
+        <TLDRComponent
+          loading={loading}
+          onChange={value => onPostTLDRUpdate(value)}
+          content={post?.tldr as unknown as string}
+        />
+      )}
       <Button
         buttonStyle={styles(theme).buttonStyle}
         title="Share"
@@ -266,6 +299,7 @@ const styles = (theme: Theme) =>
   StyleSheet.create({
     container: {
       paddingBottom: theme.sizes.extra_extra_large * 2,
+      paddingTop: theme.sizes.large,
     },
     headerContainer: {
       marginBottom: theme.sizes.medium,
@@ -276,6 +310,7 @@ const styles = (theme: Theme) =>
     buttonStyle: {
       alignSelf: 'center',
       marginBottom: theme.sizes.medium,
+      marginTop: theme.sizes.extra_extra_large,
     },
     indicator: {
       marginTop: theme.sizes.medium,
@@ -292,6 +327,40 @@ const styles = (theme: Theme) =>
     },
     date: {
       marginRight: theme.sizes.small,
+    },
+    header: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      flex: 1,
+      width: '100%',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: theme.sizes.large,
+      paddingVertical: theme.sizes.extra_small,
+      zIndex: 10,
+      backgroundColor: theme.colors.background_color,
+    },
+    saveButtonStyle: {
+      paddingVertical: theme.sizes.extra_small,
+      paddingHorizontal: theme.sizes.small,
+    },
+    headerRight: {
+      alignContent: 'flex-end',
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.sizes.extra_small,
+    },
+    menuStyle: {
+      position: 'absolute',
+      bottom: -40,
+      left: -50,
+      backgroundColor: theme.colors.background_color,
+      padding: theme.sizes.small,
+      width: 80,
+      alignItems: 'flex-end',
+      borderRadius: theme.sizes.border_radius,
     },
   });
 

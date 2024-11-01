@@ -1,7 +1,7 @@
 import Status from '../../components/post/enum/PostStatusEnum';
 
 export interface Post {
-  $id: string;
+  $id?: string;
   title: string;
   status?: Status;
   category: string[];

@@ -17,6 +17,7 @@ interface WrapperProps extends PropsWithChildren {
   contentContainerStyle?: ViewStyle;
   scrollViewStyle?: ViewStyle;
   floatingContent?: ReactElement;
+  contentAboveScrollable?: ReactElement;
 }
 
 const Wrapper = forwardRef<any, WrapperProps>(
@@ -29,12 +30,14 @@ const Wrapper = forwardRef<any, WrapperProps>(
       contentContainerStyle,
       scrollViewStyle,
       floatingContent,
+      contentAboveScrollable,
     },
     ref,
   ) => {
     const {theme} = useTheme();
     return (
       <SafeAreaView>
+        {contentAboveScrollable}
         <div style={containerStyle(theme)}>
           <View style={style}>
             <ScrollView

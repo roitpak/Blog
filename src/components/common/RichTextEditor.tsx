@@ -49,5 +49,5 @@ export default function RichTextEditor({
 }
 
 const styles = StyleSheet.create({
-  editorStyle: {minHeight: 300, width: '100%'},
+  editorStyle: {minHeight: 100, width: '100%', backgroundColor: 'white'},
 });
