@@ -97,7 +97,7 @@ function VideoUrlComponent({
 const styles = (theme: Theme) =>
   StyleSheet.create({
     container: {
-      marginVertical: theme.sizes.medium,
+      marginTop: theme.sizes.medium,
       flexDirection: 'column',
     },
     topContainer: {

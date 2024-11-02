@@ -71,6 +71,15 @@ function HtmlRenderer({content}: HtmlRendererProps): JSX.Element {
             text-decoration: underline;
             }
 
+            img {
+              max-height: 900px;
+              width: auto;
+              height: auto;
+              max-width: 100%;
+              display: block;
+              margin: auto;
+              object-fit: contain;
+            }
           </style>
           </head>
           <body>
@@ -94,7 +103,7 @@ function HtmlRenderer({content}: HtmlRendererProps): JSX.Element {
         source={{html: returnHtmlContent()}}
         style={styles().container}
         onMessage={event => {
-          setWebViewHeight(parseInt(event.nativeEvent.data, 10) / 3.5);
+          setWebViewHeight(parseInt(event.nativeEvent.data, 10));
         }}
         javaScriptEnabled={true}
         injectedJavaScript={webViewScript}
