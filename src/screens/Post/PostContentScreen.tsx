@@ -27,9 +27,10 @@ import {ParamListBase, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import Clipboard from '@react-native-clipboard/clipboard';
 import GithubLink from '../../components/post/GithubLink';
-import {formatDate} from '../../helpers/functions';
+import {convertToHtml, formatDate} from '../../helpers/functions';
 import {PostMetrics} from '../../appwrite/types/post_metrics';
 import postMetricsService from '../../appwrite/postMetrics';
+import {Post} from '../../appwrite/types/posts';
 
 function PostContentScreen({route}: any): JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -42,9 +43,11 @@ function PostContentScreen({route}: any): JSX.Element {
   const [updatingPost, setUpdatingPost] = useState(false);
 
   const {theme} = useTheme();
+  const {openModal} = useModal();
 
   useEffect(() => {
     setPost(route.params);
+    processContent(route.params.contents, route?.params);
     postMetricsService.getPostMetrics(route?.params?.$id).then(response => {
       if (response.length > 0) {
         setPostMetrics(response[0]);
@@ -55,8 +58,6 @@ function PostContentScreen({route}: any): JSX.Element {
   const onChange = (value: PostContent) => {
     setNewPostData(value);
   };
-
-  const {openModal} = useModal();
 
   const onAdd = () => {
     setNewPostData({
@@ -102,6 +103,12 @@ function PostContentScreen({route}: any): JSX.Element {
           openModal({title: 'Unknown error occurred'});
         }
       });
+  };
+
+  const processContent = async (contents: string[], postData: Post) => {
+    // console.log('🚀 ~ processContent ~ contents:', contents);
+    await convertToHtml(contents, postData);
+    // console.log('🚀 ~ processContent ~ html:', html);
   };
 
   const onPostStatusChange = async (status: Status) => {

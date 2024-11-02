@@ -4,6 +4,8 @@ import Config from 'react-native-config';
 import {getUniqueId} from 'react-native-device-info';
 import {v4 as uuidv4} from 'uuid';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import postService from '../appwrite/posts';
+import {Post} from '../appwrite/types/posts';
 
 const myConfig = Platform.OS === 'web' ? process.env : Config;
 
@@ -89,6 +91,8 @@ export function calculateReadingTime(wordCount: number, wordsPerMinute = 200) {
 const VIEWED_POST_STORAGE_KEY = 'storedIDs';
 
 class StoredPostIdsService {
+  // This is used to store viewed post information in device.
+  // Make view count organic
   async storeIDs(ids: string) {
     try {
       const jsonValue = JSON.stringify(ids);
@@ -128,3 +132,58 @@ class StoredPostIdsService {
 }
 const storedPostIdsService = new StoredPostIdsService();
 export default storedPostIdsService;
+
+function convertTitleToRichText(title: string) {
+  return `<br><h1>${title}</h1>`;
+}
+
+function convertSubtitleToRichText(subtitle: string) {
+  return `<h2>${subtitle}</h2>`;
+}
+
+function convertContentToRichText(content: string) {
+  const paragraphs = content
+    .split('\n')
+    .map(line => `<p>${line.trim()}</p>`)
+    .join('');
+  return paragraphs;
+}
+
+function convertImageToRichText(imageUrl: string) {
+  return `<img src="${imageUrl}" alt="Image"/>`;
+}
+
+export const convertToHtml = async (posts: string[], post: Post) => {
+  const htmlArray = await Promise.all(
+    posts.map(async (id: string) => {
+      const response = await postService.getPostContentData(id);
+      let content = '';
+
+      if (response?.title) {
+        content += convertTitleToRichText(response.title);
+      }
+      if (response?.subtitle) {
+        content += convertSubtitleToRichText(response.subtitle);
+      }
+      if (response?.image_id) {
+        const url = await postService.getFilePreview(response.image_id);
+        content += convertImageToRichText(url);
+      }
+      if (response?.content) {
+        content += convertContentToRichText(response.content);
+      }
+
+      return content;
+    }),
+  );
+
+  const html = htmlArray.join('');
+  console.log('🚀 ~ convertToHtml ~ html:', html);
+  await postService
+    .updatePost(post?.$id ?? '', {...post, content: html})
+    .then(() => {
+      console.log('Content updated successfully');
+    })
+    .catch(err => console.log(err));
+  return html;
+};
