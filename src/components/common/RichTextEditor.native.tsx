@@ -4,6 +4,7 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {actions, RichEditor, RichToolbar} from 'react-native-pell-rich-editor';
 import postService from '../../appwrite/posts';
 import {useModal} from '../../context/modal/useModal';
+import { Dimensions } from '../../helpers/Dimensions';
 
 interface RichTextEditorProps {
   value: string;
@@ -41,10 +42,13 @@ export default function RichTextEditor({
       selectionLimit: 1,
     });
     if (result && result?.assets && result?.assets[0]) {
-      if (result?.assets[0]?.fileSize && result?.assets[0]?.fileSize > 500000) {
+      if (
+        result?.assets[0]?.fileSize &&
+        result?.assets[0]?.fileSize > 1000000
+      ) {
         openModal({
           title: 'Image too large',
-          subTitle: 'Image size should not exceed 500KB',
+          subTitle: 'Image size should not exceed 1MB',
           buttons: [{label: 'Ok', onClick: () => closeModal()}],
         });
         return;
@@ -72,6 +76,7 @@ export default function RichTextEditor({
         allowFileAccessFromFileURLs={true}
         allowUniversalAccessFromFileURLs={true}
         style={styles.richEditor}
+        scrollEnabled={true}
       />
       <RichToolbar
         editor={richText}
@@ -110,7 +115,7 @@ export default function RichTextEditor({
 }
 
 const styles = StyleSheet.create({
-  editorStyle: {width: '100%', flex: 1},
+  editorStyle: {width: '100%', flex: 1, height: Dimensions.windowHeight * 0.9},
   richEditor: {flex: 1},
   toolbar: {backgroundColor: '#f5f5f5'},
 });

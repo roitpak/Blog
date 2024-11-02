@@ -4,6 +4,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import postService from '../../appwrite/posts';
 import {useModal} from '../../context/modal/useModal';
+import {Dimensions} from '../../helpers/Dimensions';
 
 interface RichTextEditorProps {
   value: string;
@@ -31,10 +32,10 @@ export default function RichTextEditor({
   }, [quillRef]);
 
   const onImagePicked = async (event: ChangeEvent<HTMLInputElement>) => {
-    if (event?.target?.files?.[0] && event?.target?.files?.[0].size > 500000) {
+    if (event?.target?.files?.[0] && event?.target?.files?.[0].size > 1000000) {
       openModal({
         title: 'Image too large',
-        subTitle: 'Image size should not exceed 500KB',
+        subTitle: 'Image size should not exceed 1MB',
         buttons: [{label: 'Ok', onClick: () => closeModal()}],
       });
       return;
@@ -115,5 +116,11 @@ export default function RichTextEditor({
 }
 
 const styles = StyleSheet.create({
-  editorStyle: {minHeight: 100, width: '100%', backgroundColor: 'white'},
+  editorStyle: {
+    height: Dimensions.windowHeight * 0.8,
+    width: '100%',
+    backgroundColor: 'white',
+    paddingBottom: 40,
+    // overflow: 'hidden',
+  },
 });

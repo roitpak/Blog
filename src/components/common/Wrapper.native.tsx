@@ -20,6 +20,7 @@ interface WrapperProps extends PropsWithChildren {
   scrollViewStyle?: ViewStyle;
   floatingContent?: ReactElement;
   contentAboveScrollable?: ReactElement;
+  showsVerticalScrollIndicator?: boolean;
 }
 
 const Wrapper = forwardRef<any, WrapperProps>(
@@ -33,6 +34,7 @@ const Wrapper = forwardRef<any, WrapperProps>(
       scrollViewStyle,
       floatingContent,
       contentAboveScrollable,
+      showsVerticalScrollIndicator = false,
     },
     ref,
   ) => {
@@ -63,7 +65,7 @@ const Wrapper = forwardRef<any, WrapperProps>(
               scrollEnabled={scrollEnabled}
               ref={ref}
               refreshControl={refreshControl}
-              showsVerticalScrollIndicator={false}
+              showsVerticalScrollIndicator={showsVerticalScrollIndicator}
               showsHorizontalScrollIndicator={false}
               keyboardShouldPersistTaps="handled">
               <View>{children}</View>
