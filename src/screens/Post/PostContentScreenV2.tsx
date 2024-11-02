@@ -153,6 +153,7 @@ function PostContentScreenV2({route}: any): JSX.Element {
 
   return (
     <Wrapper
+      showsVerticalScrollIndicator={true}
       contentAboveScrollable={
         <View style={styles(theme).header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -287,14 +288,16 @@ function PostContentScreenV2({route}: any): JSX.Element {
           content={post?.tldr as unknown as string}
         />
       )}
-      {isEditing ? (
-        <RichTextEditor
-          onChangeText={onChangePostContent}
-          value={post.content}
-        />
-      ) : (
-        <HtmlRenderer content={post.content} />
-      )}
+      <View style={styles(theme).contentContainer}>
+        {isEditing ? (
+          <RichTextEditor
+            onChangeText={onChangePostContent}
+            value={post.content}
+          />
+        ) : (
+          <HtmlRenderer content={post.content} />
+        )}
+      </View>
     </Wrapper>
   );
 }
@@ -367,6 +370,9 @@ const styles = (theme: Theme) =>
     },
     shareIconContainerStyle: {
       padding: 0,
+    },
+    contentContainer: {
+      marginTop: theme.sizes.medium,
     },
   });
 

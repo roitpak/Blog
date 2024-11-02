@@ -22,6 +22,7 @@ const TLDRComponent = ({onChange, content, loading}: TLDRComponentProps) => {
 
   const [editMode, setEditMode] = useState(false);
   const [newTldr, setNewTldr] = useState(content);
+  const [showAll, setShowAll] = useState(false);
 
   const onConfirm = () => {
     setEditMode(false);
@@ -29,17 +30,25 @@ const TLDRComponent = ({onChange, content, loading}: TLDRComponentProps) => {
   };
 
   return (
-    <View style={styles(theme).tldrContent}>
+    <View style={[styles(theme).tldrContent, !showAll && {height: 100}]}>
       <View style={styles(theme).topTitleContainer}>
         <CustomText title={'TLDR:'} type={'h1'} />
-        {!editMode && isAdmin && (
+        <View style={styles(theme).expandContainer}>
           <Icon
             color={theme.colors.text_color}
-            onPress={() => setEditMode(true)}
-            icon={'pencil'}
+            onPress={() => setShowAll(!showAll)}
+            icon={showAll ? 'shrink2' : 'enlarge2'}
             size={theme.sizes.large}
           />
-        )}
+          {!editMode && isAdmin && (
+            <Icon
+              color={theme.colors.text_color}
+              onPress={() => setEditMode(true)}
+              icon={'pencil'}
+              size={theme.sizes.large}
+            />
+          )}
+        </View>
       </View>
       {editMode ? (
         <CustomTextInput
@@ -82,10 +91,10 @@ const styles = (theme: Theme) =>
   StyleSheet.create({
     tldrContent: {
       padding: theme.sizes.extra_small,
-      marginTop: theme.sizes.extra_extra_large,
       // borderWidth: 1,
       borderRadius: theme.sizes.border_radius,
       // borderColor: theme.colors.button_border,
+      overflow: 'hidden',
       backgroundColor: theme.colors.background_color,
       shadowColor: '#000',
       shadowOffset: {
@@ -116,6 +125,10 @@ const styles = (theme: Theme) =>
     },
     tldrText: {
       lineHeight: 17,
+    },
+    expandContainer: {
+      flexDirection: 'row',
+      gap: theme.sizes.extra_small,
     },
   });
 
