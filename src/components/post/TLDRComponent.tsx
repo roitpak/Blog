@@ -30,6 +30,7 @@ const TLDRComponent = ({onChange, content, loading}: TLDRComponentProps) => {
   };
 
   return (
+    // eslint-disable-next-line react-native/no-inline-styles
     <View style={[styles(theme).tldrContent, !showAll && {height: 100}]}>
       <View style={styles(theme).topTitleContainer}>
         <CustomText title={'TLDR:'} type={'h1'} />
