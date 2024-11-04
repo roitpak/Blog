@@ -4,7 +4,7 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {actions, RichEditor, RichToolbar} from 'react-native-pell-rich-editor';
 import postService from '../../appwrite/posts';
 import {useModal} from '../../context/modal/useModal';
-import { Dimensions } from '../../helpers/Dimensions';
+import {Dimensions} from '../../helpers/Dimensions';
 
 interface RichTextEditorProps {
   value: string;
