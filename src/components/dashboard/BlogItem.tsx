@@ -5,7 +5,7 @@ import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Theme} from '../../constants/Types';
 import {ParamListBase, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {postContentScreenV2} from '../../constants/Screens';
+import {postContentScreen} from '../../constants/Screens';
 import {Post} from '../../appwrite/types/posts';
 import {formatDate} from '../../helpers/functions';
 import strings from '../../constants/strings.json';
@@ -22,7 +22,7 @@ const BlogItem = ({item}: AddPostModalProps) => {
   const {theme} = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const onPressItem = () => {
-    navigation.navigate(postContentScreenV2, item);
+    navigation.navigate(postContentScreen, item);
     return;
   };
 

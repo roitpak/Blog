@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import {ParamListBase, useNavigation} from '@react-navigation/native';
-import {postContentScreenV2} from '../../constants/Screens';
+import {postContentScreen} from '../../constants/Screens';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useUser} from '../../context/user/useUser';
 import postService from '../../appwrite/posts';
@@ -60,7 +60,7 @@ function AddPostModal({showAddPost, close}: AddPostModalProps): JSX.Element {
       .then(response => {
         closeModal();
         if (response) {
-          navigation.navigate(postContentScreenV2, response);
+          navigation.navigate(postContentScreen, response);
         }
       })
       .catch(err => {

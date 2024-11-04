@@ -3,7 +3,6 @@ import {Post} from './types/posts';
 import Config from 'react-native-config';
 import {Platform} from 'react-native';
 import {Asset} from 'react-native-image-picker';
-import {PostContent} from '../constants/Types';
 import postMetricsService from './postMetrics';
 
 const myConfig = Platform.OS === 'web' ? process.env : Config;
@@ -26,17 +25,6 @@ export class PostService {
         myConfig.REACT_APP_POSTS_DATABASE,
         myConfig.REACT_APP_POSTS_COLLECTION,
         slug,
-      );
-    } catch (error) {
-      throw error;
-    }
-  }
-  async getPostData(id: string) {
-    try {
-      return await this.databases.getDocument(
-        myConfig.REACT_APP_POSTS_DATABASE,
-        myConfig.REACT_APP_POSTS_DATA_COLLECTION,
-        id,
       );
     } catch (error) {
       throw error;
@@ -81,72 +69,6 @@ export class PostService {
     }
   }
 
-  async createPostContent(data: PostContent, post: Post) {
-    let tempPost = {
-      $id: post.$id,
-      title: post.title,
-      contents: post.contents,
-      category: post.category,
-      shareUrl: post.shareUrl,
-      likes: post.likes,
-      githubUrl: post.githubUrl,
-      uploadedBy: post.uploadedBy,
-      status: post.status,
-      tldr: post.tldr,
-      videoUrl: post.videoUrl,
-      content: post.content,
-    };
-    let postData = data;
-    // If there is image upload it
-    if (data?.image) {
-      await this.uploadFile(data.image)
-        .then((response: any) => {
-          postData.image_id = response.$id;
-        })
-        .catch(err => {
-          throw err;
-        });
-    }
-    delete postData.image;
-    let id = '';
-    // create post data with that image id
-    await this.databases
-      .createDocument(
-        myConfig.REACT_APP_POSTS_DATABASE,
-        myConfig.REACT_APP_POSTS_DATA_COLLECTION,
-        ID.unique(),
-        postData,
-      )
-      .then(response => {
-        id = response.$id;
-      })
-      .catch(error => {
-        throw error;
-      });
-    tempPost?.contents?.push(id);
-    // add post data contents to post
-    if (post?.$id) {
-      await this.updatePost(post.$id, tempPost)
-        .then(response => {
-          return response;
-        })
-        .catch(err => console.log(err));
-    }
-  }
-
-  async getPostContentData(id: string) {
-    try {
-      return await this.databases.getDocument(
-        myConfig.REACT_APP_POSTS_DATABASE,
-        myConfig.REACT_APP_POSTS_DATA_COLLECTION,
-        id,
-      );
-      // to suppress typescript error
-    } catch (error) {
-      throw error;
-    }
-  }
-
   async updatePost(slug: string, post: Post) {
     let tempPost = {
       $id: post.$id,
@@ -168,47 +90,6 @@ export class PostService {
         myConfig.REACT_APP_POSTS_COLLECTION,
         slug,
         tempPost,
-      );
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async updatePostContent(slug: string, post: PostContent) {
-    let postData = {
-      title: post?.title,
-      subtitle: post?.subtitle,
-      image_id: post.image_id ? post.image_id : null,
-      content: post?.content,
-      content_type: post?.content_type,
-    };
-    // if image is deleted or new uploaded, remove from server
-    if (!post?.image_id || post?.image) {
-      const response = await this.getPostContentData(slug);
-      if (response?.image_id) {
-        try {
-          await this.deleteFile(response?.image_id);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    }
-    // If there is image upload it
-    if (post?.image) {
-      await this.uploadFile(post.image)
-        .then((imageResponse: any) => {
-          postData.image_id = imageResponse.$id;
-        })
-        .catch(err => {
-          throw err;
-        });
-    }
-    try {
-      return await this.databases.updateDocument(
-        myConfig.REACT_APP_POSTS_DATABASE,
-        myConfig.REACT_APP_POSTS_DATA_COLLECTION,
-        slug,
-        postData,
       );
     } catch (error) {
       throw error;

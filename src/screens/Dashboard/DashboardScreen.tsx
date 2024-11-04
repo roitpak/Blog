@@ -10,8 +10,8 @@ import {
 import {useUser} from '../../context/user/useUser';
 import {ParamListBase, useNavigation} from '@react-navigation/native';
 import {
-  addPostScreen,
   loginScreen,
+  postContentScreen,
   privacyScreen,
   verificationEmailScreen,
 } from '../../constants/Screens';
@@ -95,7 +95,7 @@ function DashboardScreen(): JSX.Element {
         await postService
           .getPost(id)
           .then(response => {
-            navigation.navigate(addPostScreen, response);
+            navigation.navigate(postContentScreen, response);
           })
           .catch(err => {
             console.log(err);
