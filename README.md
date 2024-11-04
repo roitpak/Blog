@@ -221,7 +221,6 @@ REACT_APP_ENDPOINT="https://cloud.appwrite.io/v1" // AppWrite might update later
 
 REACT_APP_POSTS_DATABASE="Main Database ID"
 REACT_APP_POSTS_COLLECTION="Posts collection ID"
-REACT_APP_POSTS_DATA_COLLECTION="Post data ID" //Item data of list of contents in pos
 REACT_APP_POSTS_BUCKET="Storage bucket id here"
 ```
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
