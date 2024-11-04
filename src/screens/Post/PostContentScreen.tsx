@@ -163,64 +163,62 @@ function PostContentScreen({route}: any): JSX.Element {
               color={theme.colors.text_color}
             />
           </TouchableOpacity>
-          {isAdmin && (
-            <View style={styles(theme).headerRight}>
+          <View style={styles(theme).headerRight}>
+            <View>
+              <Button
+                buttonStyle={styles(theme).saveButtonStyle}
+                title="Share"
+                iconLeft={
+                  <Icon
+                    containerStyle={styles(theme).shareIconContainerStyle}
+                    icon={'share'}
+                    size={theme.sizes.medium}
+                    color={theme.colors.button_text}
+                  />
+                }
+                type={BUTTON_TYPES.outlined}
+                onPress={onPressShare}
+              />
+            </View>
+            {isEditing && isAdmin && (
               <View>
                 <Button
                   buttonStyle={styles(theme).saveButtonStyle}
-                  title="Share"
-                  iconLeft={
-                    <Icon
-                      containerStyle={styles(theme).shareIconContainerStyle}
-                      icon={'share'}
-                      size={theme.sizes.medium}
-                      color={theme.colors.button_text}
-                    />
-                  }
-                  type={BUTTON_TYPES.outlined}
-                  onPress={onPressShare}
+                  title="Save"
+                  type={BUTTON_TYPES.filled}
+                  onPress={onPressSavePost}
+                  loading={loading}
                 />
               </View>
-              {isEditing && (
-                <View>
-                  <Button
-                    buttonStyle={styles(theme).saveButtonStyle}
-                    title="Save"
-                    type={BUTTON_TYPES.filled}
-                    onPress={onPressSavePost}
-                    loading={loading}
-                  />
-                </View>
-              )}
-              {post.status !== Status.published && (
-                <View>
-                  <Button
-                    buttonStyle={styles(theme).saveButtonStyle}
-                    title="Publish"
-                    type={BUTTON_TYPES.filled}
-                    onPress={() => onPostStatusChange(Status.published)}
-                    loading={loading}
-                  />
-                </View>
-              )}
+            )}
+            {post.status !== Status.published && isAdmin && (
               <View>
-                <TouchableOpacity onPress={() => setShowMenu(!showMenu)}>
-                  <Icon
-                    icon={'menu'}
-                    size={theme.sizes.large}
-                    color={theme.colors.text_color}
-                  />
-                </TouchableOpacity>
-                {showMenu && (
-                  <View style={styles(theme).menuStyle}>
-                    <TouchableOpacity onPress={onPressEdit}>
-                      <CustomText title={'Edit'} type={'p1'} />
-                    </TouchableOpacity>
-                  </View>
-                )}
+                <Button
+                  buttonStyle={styles(theme).saveButtonStyle}
+                  title="Publish"
+                  type={BUTTON_TYPES.filled}
+                  onPress={() => onPostStatusChange(Status.published)}
+                  loading={loading}
+                />
               </View>
+            )}
+            <View>
+              <TouchableOpacity onPress={() => setShowMenu(!showMenu)}>
+                <Icon
+                  icon={'menu'}
+                  size={theme.sizes.large}
+                  color={theme.colors.text_color}
+                />
+              </TouchableOpacity>
+              {showMenu && (
+                <View style={styles(theme).menuStyle}>
+                  <TouchableOpacity onPress={onPressEdit}>
+                    <CustomText title={'Edit'} type={'p1'} />
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
-          )}
+          </View>
         </View>
       }
       style={styles(theme).container}>
