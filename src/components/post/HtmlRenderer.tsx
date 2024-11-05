@@ -29,6 +29,7 @@ function HtmlRenderer({content}: HtmlRendererProps): JSX.Element {
             line-height: 1.6;
             margin-bottom: 15px;
             color: ${theme.colors.text_color};
+            text-align: justify;
             }
 
             pre { 
@@ -73,6 +74,13 @@ function HtmlRenderer({content}: HtmlRendererProps): JSX.Element {
             width: auto;
             display: block;
             margin: auto;
+            }
+            blockquote {
+              margin: 20px 0;
+              padding-left: 15px;
+              border-left: 3px solid ${theme.colors.gray};
+              color: ${theme.colors.text_color};
+              font-style: italic;
             }
           </style>
           </head>

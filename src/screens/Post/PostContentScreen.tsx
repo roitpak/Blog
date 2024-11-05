@@ -23,7 +23,7 @@ import {ParamListBase, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import Clipboard from '@react-native-clipboard/clipboard';
 import GithubLink from '../../components/post/GithubLink';
-import {formatDate} from '../../helpers/functions';
+import {formatDate, sanitizeRichText} from '../../helpers/functions';
 import {PostMetrics} from '../../appwrite/types/post_metrics';
 import postMetricsService from '../../appwrite/postMetrics';
 import RichTextEditor from '../../components/common/RichTextEditor';
@@ -86,7 +86,10 @@ function PostContentScreen({route}: any): JSX.Element {
     setLoading(true);
     setIsEditing(false);
     await postService
-      .updatePost(post?.$id ?? '', post)
+      .updatePost(post?.$id ?? '', {
+        ...post,
+        content: sanitizeRichText(post.content),
+      })
       .then(() => {
         console.log('Post saved successfully');
         // setPost(response as unknown as Post);
