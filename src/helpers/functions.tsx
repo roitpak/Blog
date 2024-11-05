@@ -128,3 +128,8 @@ class StoredPostIdsService {
 }
 const storedPostIdsService = new StoredPostIdsService();
 export default storedPostIdsService;
+
+export function sanitizeRichText(html: string) {
+  // fix for: Unecessary break lines rendered after saving rich text
+  return html.replace(/<p>\s*<\/p>/g, '').replace(/<br\s*\/?>/g, '');
+}
