@@ -38,13 +38,13 @@ import {getValueFromUrl} from '../../helpers/functions';
 
 function DashboardScreen(): JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-  const {user, isAdmin, logout, isAdminLoading} = useUser();
+  const {user, isAdmin, logout, isUserLoading} = useUser();
   const [posts, setPosts] = useState<Post[]>([]);
   const {openModal, closeModal} = useModal();
   const {theme} = useTheme();
   const [showAddPost, setShowAddPost] = useState(false);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const goToSign = () => navigation.navigate(loginScreen);
 
@@ -67,7 +67,7 @@ function DashboardScreen(): JSX.Element {
   };
 
   useEffect(() => {
-    if (isAdminLoading) {
+    if (isUserLoading) {
       return;
     }
     getPosts();
@@ -78,7 +78,7 @@ function DashboardScreen(): JSX.Element {
     // Return the function to unsubscribe from the event so it gets removed on unmount
     return unsubscribe;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAdmin, isAdminLoading]);
+  }, [isAdmin, isUserLoading]);
 
   React.useEffect(() => {
     Linking.getInitialURL().then(async (url: string | null) => {
@@ -92,12 +92,15 @@ function DashboardScreen(): JSX.Element {
         return;
       }
       if (id) {
+        setLoading(true);
         await postService
           .getPost(id)
           .then(response => {
+            setLoading(false);
             navigation.navigate(postContentScreen, response);
           })
           .catch(err => {
+            setLoading(false);
             console.log(err);
           });
         //http://localhost:3000/66098fb547f3dad78635
@@ -142,7 +145,7 @@ function DashboardScreen(): JSX.Element {
       style={styles(theme).mainContainer}
       refreshControl={
         <RefreshControl
-          refreshing={loading || isAdminLoading}
+          refreshing={loading || isUserLoading}
           onRefresh={getPosts}
         />
       }>
@@ -183,10 +186,7 @@ function DashboardScreen(): JSX.Element {
           <Button title={'Add Post'} onPress={addPost} />
         </View>
       )}
-      {posts.length === 0 && !loading && !isAdminLoading && (
-        <CustomText title={strings.noContent} type={'h2'} />
-      )}
-      {loading && isAdminLoading && (
+      {loading && isUserLoading && (
         <ActivityIndicator
           style={styles(theme).indicator}
           size={'small'}
