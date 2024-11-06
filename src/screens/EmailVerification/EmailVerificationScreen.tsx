@@ -14,10 +14,12 @@ import strings from '../../constants/StringsIndex';
 import Button from '../../components/common/Button';
 import {BUTTON_TYPES} from '../../constants/Constants';
 import {loginScreen} from '../../constants/Screens';
+import {useUser} from '../../context/user/useUser';
 
 function EmailVerificationScreen({route}: any): JSX.Element {
   const {theme} = useTheme();
   const {openModal} = useModal();
+  const {user} = useUser();
 
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
@@ -38,14 +40,12 @@ function EmailVerificationScreen({route}: any): JSX.Element {
           setSuccess(true);
         })
         .catch(err => {
-          console.log('Error--->', err);
-          setLoading(false);
-          setSuccess(false);
           if (err instanceof Error) {
             openModal({title: 'Sign in', subTitle: err.message});
           } else {
             openModal({title: 'Sign in', subTitle: 'Unknown error occurred'});
           }
+          navigation.replace(loginScreen);
         });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -56,7 +56,12 @@ function EmailVerificationScreen({route}: any): JSX.Element {
 
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
-  const goToLogin = () => {
+  const navigateToScreen = () => {
+    if (user) {
+      console.log('navigated to user');
+      navigation.goBack();
+      return;
+    }
     navigation.replace(loginScreen);
   };
 
@@ -65,27 +70,25 @@ function EmailVerificationScreen({route}: any): JSX.Element {
       <View style={styles(theme).container}>
         <View style={styles(theme).content}>
           {loading && (
-            <ActivityIndicator color={theme.colors.text_color} size={'large'} />
+            <>
+              <ActivityIndicator
+                color={theme.colors.text_color}
+                size={'large'}
+              />
+              <CustomText type="p1" title={strings.verificationInProcess} />
+            </>
           )}
           {!loading && success && (
-            <Icon icon="check" color={theme.colors.text_color} size={20} />
-          )}
-          {loading && (
-            <CustomText type="p1" title={strings.verificationInProcess} />
-          )}
-          {!loading && success && (
-            <CustomText type="p1" title={strings.emailVerifiedSuccessfully} />
-          )}
-          {!loading && !success && (
-            <CustomText type="p1" title={strings.errorOccurred} />
-          )}
-          {!loading && success && (
-            <Button
-              buttonStyle={styles(theme).button}
-              type={BUTTON_TYPES.filled}
-              title={'Login'}
-              onPress={goToLogin}
-            />
+            <>
+              <Icon icon="check" color={theme.colors.text_color} size={20} />
+              <CustomText type="p1" title={strings.emailVerifiedSuccessfully} />
+              <Button
+                buttonStyle={styles(theme).button}
+                type={BUTTON_TYPES.filled}
+                title={user ? 'Go back' : 'Login'}
+                onPress={navigateToScreen}
+              />
+            </>
           )}
         </View>
       </View>

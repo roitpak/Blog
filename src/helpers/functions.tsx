@@ -66,10 +66,22 @@ export function getValueFromUrl(url: string | null) {
   if (!url) {
     return null;
   }
-  if (url.indexOf('verify') !== -1) {
+
+  const urlObj = new URL(url);
+  const urlParams = new URLSearchParams(urlObj.search);
+  const secret = urlParams.get('secret');
+  const userId = urlParams.get('userId');
+  const id = urlParams.get('id');
+
+  if (url.indexOf('verify') !== -1 && secret && userId) {
     return 'verify';
   }
+  if (id) {
+    return id;
+  }
   // Regular expression to match URLs with "/<value>" format
+  // For /screenNames
+  // previous share was:  url/<post_id>
   const regex = /\/([a-zA-Z0-9]+)$/;
 
   const match = regex.exec(url);
