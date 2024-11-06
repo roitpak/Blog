@@ -145,7 +145,7 @@ function PostContentScreen({route}: any): JSX.Element {
   };
 
   const onPressShare = () => {
-    Clipboard.setString('https://www.rohitpakhrin.com.np/' + post.$id);
+    Clipboard.setString('https://www.rohitpakhrin.com.np?id=' + post.$id);
     openModal({title: 'Link Copied, You can share it now.'});
   };
 
