@@ -34,7 +34,7 @@ function PostContentScreen({route}: any): JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const [post, setPost] = useState<Post>(route.params);
   const [postMetrics, setPostMetrics] = useState<PostMetrics>();
-  const {isAdmin} = useUser();
+  const {isAdmin, user} = useUser();
 
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(
@@ -142,6 +142,41 @@ function PostContentScreen({route}: any): JSX.Element {
       })
       .catch(err => openModal({title: err?.message}));
     setLoading(false);
+  };
+
+  const onLikePost = async () => {
+    if (
+      user?.$id &&
+      postMetrics &&
+      postMetrics?.likes?.indexOf(user?.$id) > -1
+    ) {
+      setPostMetrics({
+        ...postMetrics,
+        likes: postMetrics.likes.filter(id => id !== user?.$id),
+      });
+      console.log({
+        ...postMetrics,
+        likes: postMetrics.likes.filter(id => id !== user?.$id),
+      });
+      return;
+    }
+    if (user?.$id && postMetrics && postMetrics?.likes) {
+      const newPostMEtrics = {
+        ...postMetrics,
+        likes: [...postMetrics.likes, user?.$id],
+      };
+      setPostMetrics(newPostMEtrics);
+      await postMetricsService
+        .updatePostMetrics({
+          $id: postMetrics.$id,
+          likes: newPostMEtrics.likes,
+        })
+        .then(response => {
+          setPostMetrics(response as unknown as PostMetrics);
+        })
+        .catch(err => openModal({title: err?.message}));
+      return;
+    }
   };
 
   const onPressShare = () => {
@@ -252,6 +287,30 @@ function PostContentScreen({route}: any): JSX.Element {
               </View>
             )}
           </View>
+        </View>
+        <View style={styles(theme).likesContainer}>
+          <>
+            <Icon
+              onPress={onLikePost}
+              icon={'smile'}
+              size={theme.sizes.large}
+              color={
+                user?.$id &&
+                postMetrics &&
+                postMetrics.likes.indexOf(user?.$id) > -1
+                  ? theme.colors.positive
+                  : theme.colors.text_color
+              }
+            />
+          </>
+          <>
+            <Icon
+              onPress={onPressShare}
+              icon={'link'}
+              size={theme.sizes.large}
+              color={theme.colors.text_color}
+            />
+          </>
         </View>
       </View>
       {loading && (
@@ -374,6 +433,18 @@ const styles = (theme: Theme) =>
     },
     contentContainer: {
       marginTop: theme.sizes.medium,
+    },
+    likesContainer: {
+      flex: 1,
+      borderBottomWidth: 1,
+      borderTopWidth: 1,
+      paddingVertical: theme.sizes.extra_small,
+      borderColor: theme.colors.list_border,
+      width: '100%',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: theme.sizes.small,
     },
   });
 

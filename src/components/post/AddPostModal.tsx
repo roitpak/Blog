@@ -54,6 +54,7 @@ function AddPostModal({showAddPost, close}: AddPostModalProps): JSX.Element {
       uploadedBy: user?.$id.toString(),
       contents: [],
       content: '',
+      likes: [],
     };
     await postService
       .createPost(data)

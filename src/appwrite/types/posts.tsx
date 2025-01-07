@@ -8,7 +8,7 @@ export interface Post {
   uploadedBy?: string;
   contents: string[];
   shareUrl?: URL;
-  likes?: number;
+  likes: string[];
   githubUrl?: string;
   tldr?: string;
   videoUrl?: string;
