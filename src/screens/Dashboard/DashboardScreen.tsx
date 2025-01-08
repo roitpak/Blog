@@ -80,7 +80,43 @@ function DashboardScreen(): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAdmin, isUserLoading]);
 
+  function openAppOrRedirect() {
+    const os = getMobileOperatingSystem();
+
+    const appScheme =
+      os === 'iOS'
+        ? 'yourapp://path-to-content-ios'
+        : 'https://postyoutube.com/video';
+    const storeUrl =
+      os === 'iOS'
+        ? 'https://apps.apple.com/np/app/microsoft-word/id462054704?mt=12'
+        : 'https://play.google.com/store/apps/details?id=com.material.components&hl=en&pli=1';
+
+    const start = Date.now();
+    window.location.href = appScheme;
+
+    setTimeout(() => {
+      const end = Date.now();
+      if (end - start < 1000) {
+        window.location.href = storeUrl;
+      }
+    }, 800);
+  }
+  function getMobileOperatingSystem() {
+    const userAgent = navigator.userAgent || navigator.vendor;
+
+    if (/iPad|iPhone|iPod/.test(userAgent)) {
+      return 'iOS';
+    }
+
+    if (/android/i.test(userAgent)) {
+      return 'Android';
+    }
+  }
   React.useEffect(() => {
+    if (false) {
+      openAppOrRedirect();
+    }
     Linking.getInitialURL().then(async (url: string | null) => {
       const id = getValueFromUrl(url);
       if (id === 'verify') {
@@ -107,6 +143,7 @@ function DashboardScreen(): JSX.Element {
         //http://rohitpakhrin.com.np/66098fb547f3dad78635
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigation]);
 
   const getPosts = async () => {

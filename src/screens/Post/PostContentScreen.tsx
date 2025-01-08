@@ -34,7 +34,7 @@ function PostContentScreen({route}: any): JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const [post, setPost] = useState<Post>(route.params);
   const [postMetrics, setPostMetrics] = useState<PostMetrics>();
-  const {isAdmin} = useUser();
+  const {isAdmin, user} = useUser();
 
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(
@@ -142,6 +142,30 @@ function PostContentScreen({route}: any): JSX.Element {
       })
       .catch(err => openModal({title: err?.message}));
     setLoading(false);
+  };
+
+  const onLikePost = async () => {
+    if (user?.$id && postMetrics) {
+      let newPostMEtrics;
+      if (postMetrics?.likes?.indexOf(user?.$id) > -1) {
+        newPostMEtrics = {
+          ...postMetrics,
+          likes: postMetrics.likes.filter(id => id !== user?.$id),
+        };
+      } else {
+        newPostMEtrics = {
+          ...postMetrics,
+          likes: [...postMetrics.likes, user?.$id],
+        };
+      }
+      postMetricsService.updatePostMetrics({
+        $id: postMetrics.$id,
+        likes: newPostMEtrics.likes,
+      });
+      setPostMetrics(newPostMEtrics);
+    } else {
+      openModal({title: 'Please login to like this post'});
+    }
   };
 
   const onPressShare = () => {
@@ -253,6 +277,36 @@ function PostContentScreen({route}: any): JSX.Element {
             )}
           </View>
         </View>
+        {postMetrics && (
+          <View style={styles(theme).likesContainer}>
+            <View style={styles(theme).smilesContainer}>
+              <CustomText
+                title={postMetrics && postMetrics.likes.length.toString()}
+                type="p1"
+              />
+              <Icon
+                onPress={onLikePost}
+                icon={'smile'}
+                size={theme.sizes.large}
+                color={
+                  user?.$id &&
+                  postMetrics &&
+                  postMetrics.likes.indexOf(user?.$id) > -1
+                    ? theme.colors.positive
+                    : theme.colors.text_color
+                }
+              />
+            </View>
+            <>
+              <Icon
+                onPress={onPressShare}
+                icon={'link'}
+                size={theme.sizes.large}
+                color={theme.colors.text_color}
+              />
+            </>
+          </View>
+        )}
       </View>
       {loading && (
         <ActivityIndicator
@@ -374,6 +428,23 @@ const styles = (theme: Theme) =>
     },
     contentContainer: {
       marginTop: theme.sizes.medium,
+    },
+    likesContainer: {
+      flex: 1,
+      borderBottomWidth: 1,
+      borderTopWidth: 1,
+      paddingVertical: theme.sizes.extra_small,
+      borderColor: theme.colors.list_border,
+      width: '100%',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: theme.sizes.small,
+      marginBottom: theme.sizes.small,
+    },
+    smilesContainer: {
+      alignItems: 'center',
+      flexDirection: 'row',
     },
   });
 

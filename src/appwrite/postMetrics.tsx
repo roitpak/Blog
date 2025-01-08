@@ -70,6 +70,14 @@ export class PostMetricsService {
       postData,
     );
   }
+  async updatePostMetrics(postMetricsData: any) {
+    await this.databases.updateDocument(
+      myConfig.REACT_APP_POSTS_DATABASE,
+      myConfig.REACT_APP_POSTS_METRICS_COLLECTION,
+      postMetricsData?.$id,
+      postMetricsData,
+    );
+  }
 }
 
 const postMetricsService = new PostMetricsService();
