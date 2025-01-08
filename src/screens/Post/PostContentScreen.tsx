@@ -145,37 +145,26 @@ function PostContentScreen({route}: any): JSX.Element {
   };
 
   const onLikePost = async () => {
-    if (
-      user?.$id &&
-      postMetrics &&
-      postMetrics?.likes?.indexOf(user?.$id) > -1
-    ) {
-      setPostMetrics({
-        ...postMetrics,
-        likes: postMetrics.likes.filter(id => id !== user?.$id),
+    if (user?.$id && postMetrics) {
+      let newPostMEtrics;
+      if (postMetrics?.likes?.indexOf(user?.$id) > -1) {
+        newPostMEtrics = {
+          ...postMetrics,
+          likes: postMetrics.likes.filter(id => id !== user?.$id),
+        };
+      } else {
+        newPostMEtrics = {
+          ...postMetrics,
+          likes: [...postMetrics.likes, user?.$id],
+        };
+      }
+      postMetricsService.updatePostMetrics({
+        $id: postMetrics.$id,
+        likes: newPostMEtrics.likes,
       });
-      console.log({
-        ...postMetrics,
-        likes: postMetrics.likes.filter(id => id !== user?.$id),
-      });
-      return;
-    }
-    if (user?.$id && postMetrics && postMetrics?.likes) {
-      const newPostMEtrics = {
-        ...postMetrics,
-        likes: [...postMetrics.likes, user?.$id],
-      };
       setPostMetrics(newPostMEtrics);
-      await postMetricsService
-        .updatePostMetrics({
-          $id: postMetrics.$id,
-          likes: newPostMEtrics.likes,
-        })
-        .then(response => {
-          setPostMetrics(response as unknown as PostMetrics);
-        })
-        .catch(err => openModal({title: err?.message}));
-      return;
+    } else {
+      openModal({title: 'Please login to like this post'});
     }
   };
 
@@ -289,7 +278,13 @@ function PostContentScreen({route}: any): JSX.Element {
           </View>
         </View>
         <View style={styles(theme).likesContainer}>
-          <>
+          <View style={styles(theme).smilesContainer}>
+            {postMetrics && (
+              <CustomText
+                title={postMetrics && postMetrics.likes.length.toString()}
+                type="p1"
+              />
+            )}
             <Icon
               onPress={onLikePost}
               icon={'smile'}
@@ -302,7 +297,7 @@ function PostContentScreen({route}: any): JSX.Element {
                   : theme.colors.text_color
               }
             />
-          </>
+          </View>
           <>
             <Icon
               onPress={onPressShare}
@@ -445,6 +440,11 @@ const styles = (theme: Theme) =>
       justifyContent: 'space-between',
       alignItems: 'center',
       paddingHorizontal: theme.sizes.small,
+      marginBottom: theme.sizes.small,
+    },
+    smilesContainer: {
+      alignItems: 'center',
+      flexDirection: 'row',
     },
   });
 
