@@ -191,7 +191,10 @@ function DashboardScreen(): JSX.Element {
           refreshControl={
             <RefreshControl
               refreshing={loading || isUserLoading}
-              onRefresh={getPosts}
+              onRefresh={() => {
+                setCurrentPage(1);
+                getPosts([Query.limit(10)]);
+              }}
             />
           }
           ListHeaderComponent={
@@ -246,7 +249,7 @@ function DashboardScreen(): JSX.Element {
           }
           onEndReachedThreshold={0.2}
           onEndReached={() => {
-            if (!posts.length || posts.length < 10 * currentPage) {
+            if (loading || !posts.length || posts.length < 10 * currentPage) {
               return;
             }
             getPosts([Query.limit(10 * (currentPage + 1))]);
