@@ -42,20 +42,27 @@ const Wrapper = forwardRef<any, WrapperProps>(
         {contentAboveScrollable}
         <div style={containerStyle(theme)}>
           <View style={style}>
-            <ScrollView
-              style={scrollViewStyle}
-              contentContainerStyle={[
-                styles(theme).scrollContainer,
-                contentContainerStyle,
-              ]}
-              scrollEnabled={scrollEnabled}
-              ref={ref}
-              refreshControl={refreshControl}
-              showsVerticalScrollIndicator={showsVerticalScrollIndicator}
-              showsHorizontalScrollIndicator={false}
-              keyboardShouldPersistTaps="handled">
-              <View>{children}</View>
-            </ScrollView>
+            {scrollEnabled ? (
+              <ScrollView
+                style={scrollViewStyle}
+                contentContainerStyle={[
+                  styles(theme).scrollContainer,
+                  contentContainerStyle,
+                ]}
+                scrollEnabled={scrollEnabled}
+                ref={ref}
+                refreshControl={refreshControl}
+                showsVerticalScrollIndicator={showsVerticalScrollIndicator}
+                showsHorizontalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled">
+                <View>{children}</View>
+              </ScrollView>
+            ) : (
+              <View
+                style={[styles(theme).scrollContainer, contentContainerStyle]}>
+                {children}
+              </View>
+            )}
           </View>
           {floatingContent}
         </div>

@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
+  FlatList,
   Linking,
   Platform,
   RefreshControl,
@@ -33,6 +34,7 @@ import DashboardButtonGroup from '../../components/dashboard/DashboardButtonGrou
 import BlogItem from '../../components/dashboard/BlogItem';
 import Status from '../../components/post/enum/PostStatusEnum';
 import {getValueFromUrl} from '../../helpers/functions';
+import {Query} from 'appwrite';
 // import Markdown from 'react-native-markdown-display';
 //TODO
 
@@ -43,6 +45,7 @@ function DashboardScreen(): JSX.Element {
   const {openModal, closeModal} = useModal();
   const {theme} = useTheme();
   const [showAddPost, setShowAddPost] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [loading, setLoading] = useState(true);
 
@@ -70,9 +73,9 @@ function DashboardScreen(): JSX.Element {
     if (isUserLoading) {
       return;
     }
-    getPosts();
+    getPosts([Query.limit(10)]);
     const unsubscribe = navigation.addListener('focus', () => {
-      getPosts();
+      getPosts([Query.limit(10)]);
     });
 
     // Return the function to unsubscribe from the event so it gets removed on unmount
@@ -146,10 +149,10 @@ function DashboardScreen(): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigation]);
 
-  const getPosts = async () => {
+  const getPosts = async (customQueries: string[] = []) => {
     setLoading(true);
     await postService
-      .getPosts(isAdmin)
+      .getPosts(isAdmin, customQueries)
       .then(data => {
         if (data) {
           setPosts(data);
@@ -178,67 +181,89 @@ function DashboardScreen(): JSX.Element {
   };
 
   return (
-    <Wrapper
-      style={styles(theme).mainContainer}
-      refreshControl={
-        <RefreshControl
-          refreshing={loading || isUserLoading}
-          onRefresh={getPosts}
-        />
-      }>
+    <Wrapper scrollEnabled={false} style={styles(theme).mainContainer}>
       <AddPostModal
         showAddPost={showAddPost}
         close={() => setShowAddPost(false)}
       />
-      <View style={styles(theme).headerContainer}>
-        <CustomText bold title={strings.dashboardScreenWelcome} type={'h2'} />
-        <View style={styles(theme).topIcons}>
-          <DarkModeButton />
-          <Icon
-            style={styles(theme).exitIcon}
-            onPress={user ? logUserOut : goToSign}
-            icon={user ? 'exit' : 'enter'}
-            size={theme.sizes.large}
-            color={theme.colors.text_color}
-          />
-        </View>
-      </View>
-      <CustomText
-        style={styles(theme).introMessageStyle}
-        title={strings.dashboardScreenWelcomeSub}
-        type={'p2'}
-      />
+      {posts && (
+        <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={loading || isUserLoading}
+              onRefresh={getPosts}
+            />
+          }
+          ListHeaderComponent={
+            <>
+              <View style={styles(theme).headerContainer}>
+                <CustomText
+                  bold
+                  title={strings.dashboardScreenWelcome}
+                  type={'h2'}
+                />
+                <View style={styles(theme).topIcons}>
+                  <DarkModeButton />
+                  <Icon
+                    style={styles(theme).exitIcon}
+                    onPress={user ? logUserOut : goToSign}
+                    icon={user ? 'exit' : 'enter'}
+                    size={theme.sizes.large}
+                    color={theme.colors.text_color}
+                  />
+                </View>
+              </View>
+              <CustomText
+                style={styles(theme).introMessageStyle}
+                title={strings.dashboardScreenWelcomeSub}
+                type={'p2'}
+              />
 
-      <DashboardButtonGroup />
-      {user && (
-        <View style={styles(theme).header2StringContainer}>
-          <CustomText
-            title={`${strings.hi} ${isAdmin ? ADMIN_LABEL : ''} ${user.name}`}
-            type={'h2'}
-          />
-        </View>
-      )}
-      {isAdmin && (
-        <View style={styles(theme).topButton}>
-          <Button title={'Add Post'} onPress={addPost} />
-        </View>
-      )}
-      {loading && isUserLoading && (
-        <ActivityIndicator
-          style={styles(theme).indicator}
-          size={'small'}
-          color={theme.colors.text_color}
+              <DashboardButtonGroup />
+              {user && (
+                <View style={styles(theme).header2StringContainer}>
+                  <CustomText
+                    title={`${strings.hi} ${isAdmin ? ADMIN_LABEL : ''} ${
+                      user.name
+                    }`}
+                    type={'h2'}
+                  />
+                </View>
+              )}
+              {isAdmin && (
+                <View style={styles(theme).topButton}>
+                  <Button title={'Add Post'} onPress={addPost} />
+                </View>
+              )}
+              {loading && isUserLoading && (
+                <ActivityIndicator
+                  style={styles(theme).indicator}
+                  size={'small'}
+                  color={theme.colors.text_color}
+                />
+              )}
+            </>
+          }
+          onEndReachedThreshold={0.2}
+          onEndReached={() => {
+            if (!posts.length || posts.length < 10 * currentPage) {
+              return;
+            }
+            getPosts([Query.limit(10 * (currentPage + 1))]);
+            setCurrentPage(currentPage + 1);
+          }}
+          showsVerticalScrollIndicator={false}
+          data={posts}
+          renderItem={({item}) => (
+            <BlogItem
+              key={item?.$createdAt}
+              loading={loading}
+              onPostStatusChange={onPostStatusChange}
+              item={item}
+            />
+          )}
         />
       )}
-      {posts &&
-        posts.map(item => (
-          <BlogItem
-            key={item?.$createdAt}
-            loading={loading}
-            onPostStatusChange={onPostStatusChange}
-            item={item}
-          />
-        ))}
     </Wrapper>
   );
 }

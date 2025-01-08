@@ -56,20 +56,27 @@ const Wrapper = forwardRef<any, WrapperProps>(
           />
           <View style={style}>
             {contentAboveScrollable}
-            <KeyboardAwareScrollView
-              style={scrollViewStyle}
-              contentContainerStyle={[
-                styles(theme).scrollContainer,
-                contentContainerStyle,
-              ]}
-              scrollEnabled={scrollEnabled}
-              ref={ref}
-              refreshControl={refreshControl}
-              showsVerticalScrollIndicator={showsVerticalScrollIndicator}
-              showsHorizontalScrollIndicator={false}
-              keyboardShouldPersistTaps="handled">
-              <View>{children}</View>
-            </KeyboardAwareScrollView>
+            {scrollEnabled ? (
+              <KeyboardAwareScrollView
+                style={scrollViewStyle}
+                contentContainerStyle={[
+                  styles(theme).scrollContainer,
+                  contentContainerStyle,
+                ]}
+                scrollEnabled={scrollEnabled}
+                ref={ref}
+                refreshControl={refreshControl}
+                showsVerticalScrollIndicator={showsVerticalScrollIndicator}
+                showsHorizontalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled">
+                <View>{children}</View>
+              </KeyboardAwareScrollView>
+            ) : (
+              <View
+                style={[styles(theme).scrollContainer, contentContainerStyle]}>
+                {children}
+              </View>
+            )}
           </View>
           {floatingContent}
         </LinearGradient>
