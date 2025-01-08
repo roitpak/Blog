@@ -277,36 +277,36 @@ function PostContentScreen({route}: any): JSX.Element {
             )}
           </View>
         </View>
-        <View style={styles(theme).likesContainer}>
-          <View style={styles(theme).smilesContainer}>
-            {postMetrics && (
+        {postMetrics && (
+          <View style={styles(theme).likesContainer}>
+            <View style={styles(theme).smilesContainer}>
               <CustomText
                 title={postMetrics && postMetrics.likes.length.toString()}
                 type="p1"
               />
-            )}
-            <Icon
-              onPress={onLikePost}
-              icon={'smile'}
-              size={theme.sizes.large}
-              color={
-                user?.$id &&
-                postMetrics &&
-                postMetrics.likes.indexOf(user?.$id) > -1
-                  ? theme.colors.positive
-                  : theme.colors.text_color
-              }
-            />
+              <Icon
+                onPress={onLikePost}
+                icon={'smile'}
+                size={theme.sizes.large}
+                color={
+                  user?.$id &&
+                  postMetrics &&
+                  postMetrics.likes.indexOf(user?.$id) > -1
+                    ? theme.colors.positive
+                    : theme.colors.text_color
+                }
+              />
+            </View>
+            <>
+              <Icon
+                onPress={onPressShare}
+                icon={'link'}
+                size={theme.sizes.large}
+                color={theme.colors.text_color}
+              />
+            </>
           </View>
-          <>
-            <Icon
-              onPress={onPressShare}
-              icon={'link'}
-              size={theme.sizes.large}
-              color={theme.colors.text_color}
-            />
-          </>
-        </View>
+        )}
       </View>
       {loading && (
         <ActivityIndicator
