@@ -24,7 +24,7 @@ interface WrapperProps extends PropsWithChildren {
 const Wrapper = forwardRef<any, WrapperProps>(
   (
     {
-      scrollEnabled,
+      scrollEnabled = true,
       refreshControl,
       children,
       style,
