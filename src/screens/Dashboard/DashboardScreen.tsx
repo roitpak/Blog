@@ -33,6 +33,8 @@ import DashboardButtonGroup from '../../components/dashboard/DashboardButtonGrou
 import BlogItem from '../../components/dashboard/BlogItem';
 import Status from '../../components/post/enum/PostStatusEnum';
 import {getValueFromUrl} from '../../helpers/functions';
+import PaginationButton from '../../components/dashboard/Pagination';
+import {Query} from 'appwrite';
 // import Markdown from 'react-native-markdown-display';
 //TODO
 
@@ -43,6 +45,7 @@ function DashboardScreen(): JSX.Element {
   const {openModal, closeModal} = useModal();
   const {theme} = useTheme();
   const [showAddPost, setShowAddPost] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [loading, setLoading] = useState(true);
 
@@ -70,9 +73,9 @@ function DashboardScreen(): JSX.Element {
     if (isUserLoading) {
       return;
     }
-    getPosts();
+    getPosts([Query.limit(10)]);
     const unsubscribe = navigation.addListener('focus', () => {
-      getPosts();
+      getPosts([Query.limit(10)]);
     });
 
     // Return the function to unsubscribe from the event so it gets removed on unmount
@@ -146,10 +149,10 @@ function DashboardScreen(): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigation]);
 
-  const getPosts = async () => {
+  const getPosts = async (customQueries: string[] = []) => {
     setLoading(true);
     await postService
-      .getPosts(isAdmin)
+      .getPosts(isAdmin, customQueries)
       .then(data => {
         if (data) {
           setPosts(data);
@@ -183,7 +186,10 @@ function DashboardScreen(): JSX.Element {
       refreshControl={
         <RefreshControl
           refreshing={loading || isUserLoading}
-          onRefresh={getPosts}
+          onRefresh={() => {
+            setCurrentPage(1);
+            getPosts([Query.limit(10)]);
+          }}
         />
       }>
       <AddPostModal
@@ -239,6 +245,20 @@ function DashboardScreen(): JSX.Element {
             item={item}
           />
         ))}
+      {posts.length > 0 && (
+        <PaginationButton
+          currentPage={currentPage}
+          loading={loading}
+          onLoadMore={
+            !loading && posts.length && posts.length === currentPage * 10
+              ? () => {
+                  getPosts([Query.limit(10 * (currentPage + 1))]);
+                  setCurrentPage(currentPage + 1);
+                }
+              : undefined
+          }
+        />
+      )}
     </Wrapper>
   );
 }

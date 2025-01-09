@@ -31,14 +31,14 @@ export class PostService {
     }
   }
 
-  async getPosts(isAdmin?: boolean) {
+  async getPosts(isAdmin?: boolean, customQueries: string[] = []) {
     const queries = isAdmin
-      ? [Query.limit(10), Query.offset(0), Query.orderDesc('$createdAt')]
+      ? [Query.offset(0), Query.orderDesc('$createdAt'), ...customQueries]
       : [
           Query.equal('status', 'published'),
-          Query.limit(10),
           Query.offset(0),
           Query.orderDesc('$createdAt'),
+          ...customQueries,
         ];
     try {
       const response = await this.databases.listDocuments(
