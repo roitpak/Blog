@@ -41,7 +41,14 @@ const Wrapper = forwardRef<any, WrapperProps>(
       <SafeAreaView>
         {contentAboveScrollable}
         <div style={containerStyle(theme)}>
-          <View style={style}>
+          <View
+            style={[
+              style,
+              scrollViewStyle,
+              styles(theme).scrollContainer,
+              contentContainerStyle,
+            ]}>
+            {/* Ignore ScrollView below */}
             <ScrollView
               style={scrollViewStyle}
               contentContainerStyle={[
@@ -54,8 +61,9 @@ const Wrapper = forwardRef<any, WrapperProps>(
               showsVerticalScrollIndicator={showsVerticalScrollIndicator}
               showsHorizontalScrollIndicator={false}
               keyboardShouldPersistTaps="handled">
-              <View>{children}</View>
+              {/* <View>{children}</View> */}
             </ScrollView>
+            {children}
           </View>
           {floatingContent}
         </div>
@@ -69,10 +77,16 @@ export default Wrapper;
 const styles = (theme: Theme) =>
   StyleSheet.create({
     scrollContainer: {
-      padding: theme.sizes.extra_extra_large,
-      paddingBottom: theme.sizes.extra_extra_large * 8,
-      maxWidth: 800,
+      padding: theme.sizes.medium,
       alignSelf: 'center',
+      width: '100%',
+    },
+    contentAboveScrollableStyle: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      zIndex: 9999,
     },
   });
 
