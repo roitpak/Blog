@@ -145,3 +145,15 @@ export function sanitizeRichText(html: string) {
   // fix for: Unecessary break lines rendered after saving rich text
   return html.replace(/<p>\s*<\/p>/g, '').replace(/<br\s*\/?>/g, '');
 }
+
+export function timeToRead(text: string): string {
+  const wordsPerMinute = 200; // Average reading speed
+  const words = text.trim().split(/\s+/).length; // Split by spaces to count words
+  const minutes = words / wordsPerMinute;
+
+  if (minutes < 1) {
+    const seconds = Math.round(minutes * 60);
+    return `${seconds} sec read`;
+  }
+  return `${Math.ceil(minutes)} min read`;
+}

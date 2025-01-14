@@ -23,7 +23,11 @@ import {ParamListBase, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import Clipboard from '@react-native-clipboard/clipboard';
 import GithubLink from '../../components/post/GithubLink';
-import {formatDate, sanitizeRichText} from '../../helpers/functions';
+import {
+  formatDate,
+  sanitizeRichText,
+  timeToRead,
+} from '../../helpers/functions';
 import {PostMetrics} from '../../appwrite/types/post_metrics';
 import postMetricsService from '../../appwrite/postMetrics';
 import RichTextEditor from '../../components/common/RichTextEditor';
@@ -267,12 +271,7 @@ function PostContentScreen({route}: any): JSX.Element {
             />
             {postMetrics && (
               <View style={styles(theme).timeAndViews}>
-                <Icon
-                  icon={'eye'}
-                  size={theme.sizes.medium}
-                  color={theme.colors.text_color}
-                />
-                <CustomText title={' ' + postMetrics?.views} type={'p2'} />
+                <CustomText title={`· ${timeToRead(post.content)}`} type="p2" />
               </View>
             )}
           </View>
@@ -280,22 +279,32 @@ function PostContentScreen({route}: any): JSX.Element {
         {postMetrics && (
           <View style={styles(theme).likesContainer}>
             <View style={styles(theme).smilesContainer}>
-              <CustomText
-                title={postMetrics && postMetrics.likes.length.toString()}
-                type="p1"
-              />
-              <Icon
-                onPress={onLikePost}
-                icon={'smile'}
-                size={theme.sizes.large}
-                color={
-                  user?.$id &&
-                  postMetrics &&
-                  postMetrics.likes.indexOf(user?.$id) > -1
-                    ? theme.colors.positive
-                    : theme.colors.text_color
-                }
-              />
+              <View style={styles(theme).timeAndViews}>
+                <Icon
+                  onPress={onLikePost}
+                  icon={'smile'}
+                  size={theme.sizes.medium}
+                  color={
+                    user?.$id &&
+                    postMetrics &&
+                    postMetrics.likes.indexOf(user?.$id) > -1
+                      ? theme.colors.positive
+                      : theme.colors.text_color
+                  }
+                />
+                <CustomText
+                  title={postMetrics && postMetrics.likes.length.toString()}
+                  type="p1"
+                />
+              </View>
+              <View style={styles(theme).timeAndViews}>
+                <Icon
+                  icon={'eye'}
+                  size={theme.sizes.medium}
+                  color={theme.colors.text_color}
+                />
+                <CustomText title={' ' + postMetrics?.views} type={'p2'} />
+              </View>
             </View>
             <>
               <Icon
@@ -445,6 +454,7 @@ const styles = (theme: Theme) =>
     smilesContainer: {
       alignItems: 'center',
       flexDirection: 'row',
+      gap: theme.sizes.medium,
     },
   });
 
