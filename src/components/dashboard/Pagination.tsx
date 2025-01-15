@@ -28,7 +28,7 @@ const PaginationButton = ({
       <CustomText
         style={styles(theme).text}
         type="p1"
-        title={currentPage?.toString()}
+        title={`Page: ${currentPage?.toString()}`}
       />
       {loading && (
         <ActivityIndicator size={'small'} color={theme.colors.button_text} />
