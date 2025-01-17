@@ -26,6 +26,7 @@ interface CustomInputProps {
   autoCapitalize?: 'characters' | 'none' | 'sentences' | 'words' | undefined;
   multiline?: boolean;
   autoFocus?: boolean;
+  onSubmitEditing?: () => void;
 }
 
 function CustomTextInput({
@@ -40,12 +41,14 @@ function CustomTextInput({
   autoCapitalize,
   multiline,
   autoFocus,
+  onSubmitEditing,
 }: CustomInputProps): JSX.Element {
   const {theme} = useTheme();
 
   return (
     <View style={styles(theme).container}>
       <TextInput
+        onSubmitEditing={onSubmitEditing}
         placeholderTextColor={theme.colors.button_disabled_text}
         autoFocus={autoFocus}
         secureTextEntry={secureTextEntry}
