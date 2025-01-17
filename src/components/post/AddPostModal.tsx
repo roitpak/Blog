@@ -109,6 +109,7 @@ function AddPostModal({showAddPost, close}: AddPostModalProps): JSX.Element {
               <CustomText title={strings.categorySubtitle} type={'p2'} />
               <View>
                 <CustomTextInput
+                  onSubmitEditing={addCategory}
                   markAsRequired
                   style={styles(theme).contentContainer}
                   value={tempCategory}
