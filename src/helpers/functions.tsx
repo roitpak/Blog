@@ -4,6 +4,7 @@ import Config from 'react-native-config';
 import {getUniqueId} from 'react-native-device-info';
 import {v4 as uuidv4} from 'uuid';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useEffect, useState} from 'react';
 
 const myConfig = Platform.OS === 'web' ? process.env : Config;
 
@@ -156,4 +157,20 @@ export function timeToRead(text: string): string {
     return `${seconds} sec read`;
   }
   return `${Math.ceil(minutes)} min read`;
+}
+
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
 }
