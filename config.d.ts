@@ -8,6 +8,7 @@ declare module 'react-native-config' {
     REACT_APP_POSTS_BUCKET: string;
     REACT_APP_GEO_LOGIN_TOKEN: string;
     REACT_APP_POSTS_METRICS_COLLECTION: string;
+    REACT_APP_CATEGORIES_COLLECTION: string;
   }
 
   export const Config: NativeConfig;

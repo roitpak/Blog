@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
+  FlatList,
   Modal,
   Platform,
   StyleSheet,
@@ -21,6 +22,9 @@ import {Theme} from '../../constants/Types';
 import {useTheme} from '../../context/theme/useTheme';
 import strings from '../../constants/strings.json';
 import Icon from '../../assets/Icon';
+import categoryService from '../../appwrite/category';
+import {Category} from '../../appwrite/types/category';
+import {useDebounce} from '../../helpers/functions';
 
 interface AddPostModalProps {
   showAddPost: boolean;
@@ -33,8 +37,13 @@ function AddPostModal({showAddPost, close}: AddPostModalProps): JSX.Element {
   const [postTitle, setPostTitle] = useState('');
   const [category, setCategory] = useState<string[]>([]);
   const [tempCategory, setTempCategory] = useState('');
-  const [loading, setLoading] = useState(false);
+  const tempCategoryDebounce = useDebounce(tempCategory, 200);
 
+  const [loading, setLoading] = useState(false);
+  const [searchedCategory, setSearchedCategory] = useState<Category[] | null>(
+    null,
+  );
+  console.log('🚀 ~ AddPostModal ~ searchedCategory:', searchedCategory);
   const {user} = useUser();
   const {openModal} = useModal();
   const {theme} = useTheme();
@@ -45,6 +54,21 @@ function AddPostModal({showAddPost, close}: AddPostModalProps): JSX.Element {
     setLoading(false);
     close();
   };
+
+  useEffect(() => {
+    const fetchCategory = async (searchCategory: string) => {
+      categoryService
+        .getCategory(searchCategory)
+        .then(fetchedCategory => {
+          console.log('fetched', fetchedCategory);
+          setSearchedCategory(fetchedCategory);
+        })
+        .catch(err => {
+          console.log('Error on category', err);
+        });
+    };
+    fetchCategory(tempCategoryDebounce);
+  }, [tempCategoryDebounce]);
 
   const addPost = async () => {
     setLoading(true);
@@ -89,6 +113,10 @@ function AddPostModal({showAddPost, close}: AddPostModalProps): JSX.Element {
     setTempCategory('');
   };
 
+  const setTempCategoryDebounce = (value: string) => {
+    setTempCategory(value);
+  };
+
   return (
     <Modal transparent animationType="fade" visible={showAddPost}>
       <TouchableOpacity onPress={close} style={styles(theme).touchable}>
@@ -113,7 +141,7 @@ function AddPostModal({showAddPost, close}: AddPostModalProps): JSX.Element {
                   markAsRequired
                   style={styles(theme).contentContainer}
                   value={tempCategory}
-                  onChangeText={value => setTempCategory(value)}
+                  onChangeText={value => setTempCategoryDebounce(value)}
                   placeholder={strings.egNodeJS}
                 />
                 <TouchableOpacity
@@ -127,6 +155,23 @@ function AddPostModal({showAddPost, close}: AddPostModalProps): JSX.Element {
                     icon="plus"
                   />
                 </TouchableOpacity>
+                {searchedCategory && searchedCategory?.length > 0 && (
+                  <View style={styles(theme).searchedCategoryView}>
+                    <FlatList
+                      data={searchedCategory}
+                      renderItem={({item}) => (
+                        <TouchableOpacity
+                          onPress={() => setTempCategory(item.title)}>
+                          <CustomText
+                            title={`${item.title} (${item.posts.length})`}
+                            type={'p2'}
+                          />
+                        </TouchableOpacity>
+                      )}
+                      keyExtractor={item => item.$id}
+                    />
+                  </View>
+                )}
               </View>
               {category && (
                 <View style={styles(theme).categoryContainer}>
@@ -204,6 +249,16 @@ const styles = (theme: Theme) =>
       alignItems: 'center',
       justifyContent: 'center',
       marginTop: theme.sizes.medium,
+    },
+    searchedCategoryView: {
+      position: 'absolute',
+      left: 0,
+      bottom: -theme.sizes.extra_extra_large,
+      backgroundColor: theme.colors.background_color,
+      borderRadius: theme.sizes.border_radius,
+      padding: theme.sizes.medium,
+      borderWidth: 1,
+      borderColor: theme.colors.text_color,
     },
   });
 

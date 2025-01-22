@@ -187,18 +187,35 @@ Fields for the `Posts` collection:
 - **tldr**: `String` - Summary (Too Long Didn't Read).
 - **videoUrl**: `String` - YouTube URL.
 
-#### Create Collection Post Data
+Add **any** to read and **label:admin** to all permissions in settings. 
 
-This collection contains individual items from the list of post data. The application will recognize the items by adding their IDs to the `contents[]` array in the `Posts` collection.
 
-Fields for the `Post Data` collection:
+#### Create Collection Post Metrics
 
-- **title**: `String` - Title of the content.
-- **subtitle**: `String` - Smaller text for the content.
-- **content_type**: `String` - Type of content.
-- **image_id**: `String` - ID of the image uploaded to the bucket.
-- **content**: `String` - Main content.
-- **postID**: `String` - ID of the post from the `Posts` collection.
+This collection contains metrics for posts like views likes
+
+Fields for the `PostMetrics` collection:
+
+- **views**: `Integer` - Number of views.
+- **share_count**: `Integer` - Number of share counts.
+- **post_id**: `String` - ID of the post.
+- **likes**: `String[]` - Array of user IDs that liked the post.
+- **comments**: `String` - TBD.
+
+Add **any** to all permissions in settings. 
+
+
+#### Create Collection Categories
+
+This collection contains categories list that will be used to categories the posts. Categories are added before creating the post so that user can navigate to posts as per the categories selected.
+
+Fields for the `Categories` collection:
+
+- **title**: `String` - Title of the category.
+- **posts**: `String[]` - List of posts id that contains this category.
+
+Add **any** to read and **label:admin** to all permissions in settings. 
+Add index full text of title in indexes so that search can be performed.
 
 #### AppWrite Authentication
 <p><a href="https://appwrite.io/docs/products/auth">Authentication</a></p>
@@ -221,6 +238,8 @@ REACT_APP_ENDPOINT="https://cloud.appwrite.io/v1" // AppWrite might update later
 
 REACT_APP_POSTS_DATABASE="Main Database ID"
 REACT_APP_POSTS_COLLECTION="Posts collection ID"
+REACT_APP_POSTS_METRICS_COLLECTION="Post metrics collection ID"
+REACT_APP_CATEGORIES_COLLECTION="Categories collection ID"
 REACT_APP_POSTS_BUCKET="Storage bucket id here"
 ```
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

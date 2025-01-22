@@ -8,5 +8,6 @@ declare namespace NodeJS {
     REACT_APP_LOGIN_LOCATION_COLLECTION: string;
     REACT_APP_GEO_LOGIN_TOKEN: string;
     REACT_APP_POSTS_METRICS_COLLECTION: string;
+    REACT_APP_CATEGORIES_COLLECTION: string;
   }
 }
