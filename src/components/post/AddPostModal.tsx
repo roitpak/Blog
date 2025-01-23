@@ -43,7 +43,6 @@ function AddPostModal({showAddPost, close}: AddPostModalProps): JSX.Element {
   const [searchedCategory, setSearchedCategory] = useState<Category[] | null>(
     null,
   );
-  console.log('🚀 ~ AddPostModal ~ searchedCategory:', searchedCategory);
   const {user} = useUser();
   const {openModal} = useModal();
   const {theme} = useTheme();
@@ -58,9 +57,8 @@ function AddPostModal({showAddPost, close}: AddPostModalProps): JSX.Element {
   useEffect(() => {
     const fetchCategory = async (searchCategory: string) => {
       categoryService
-        .getCategory(searchCategory)
+        .searchCategoryByTitle(searchCategory)
         .then(fetchedCategory => {
-          console.log('fetched', fetchedCategory);
           setSearchedCategory(fetchedCategory);
         })
         .catch(err => {
@@ -85,6 +83,7 @@ function AddPostModal({showAddPost, close}: AddPostModalProps): JSX.Element {
       .then(response => {
         closeModal();
         if (response) {
+          categoryService.addCategoryOrCreate(response.$id, category);
           navigation.navigate(postContentScreen, response);
         }
       })
@@ -168,7 +167,9 @@ function AddPostModal({showAddPost, close}: AddPostModalProps): JSX.Element {
                           />
                         </TouchableOpacity>
                       )}
-                      keyExtractor={item => item.$id}
+                      keyExtractor={(item, index) =>
+                        item.$id ? item.$id : item.title + index
+                      }
                     />
                   </View>
                 )}
