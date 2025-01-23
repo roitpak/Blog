@@ -15,19 +15,21 @@ export class CategoryService {
     this.databases = new Databases(this.client);
   }
 
-  async createCategory(ids: string[]) {
+  async createCategory(category: Category) {
     try {
-      return await this.databases.createDocument(
+      const response = await this.databases.createDocument(
         myConfig.REACT_APP_POSTS_DATABASE,
         myConfig.REACT_APP_CATEGORIES_COLLECTION,
         ID.unique(),
-        {posts: ids},
+        category,
       );
+      console.log('created category');
+      return response;
     } catch (error) {
       throw error;
     }
   }
-  async getCategory(categoryTitle: string) {
+  async searchCategoryByTitle(categoryTitle: string) {
     const queries = [Query.search('title', categoryTitle)];
     try {
       const response = await this.databases.listDocuments(
@@ -39,6 +41,61 @@ export class CategoryService {
       return response?.documents as unknown as Category[];
     } catch (error) {
       throw false;
+    }
+  }
+
+  async getEqualTitleCategory(categoryTitle: string) {
+    const queries = [Query.equal('title', categoryTitle)];
+    try {
+      const response = await this.databases.listDocuments(
+        myConfig.REACT_APP_POSTS_DATABASE,
+        myConfig.REACT_APP_CATEGORIES_COLLECTION,
+        queries,
+      );
+
+      return response?.documents as unknown as Category[];
+    } catch (error) {
+      throw false;
+    }
+  }
+
+  async getCategoryByID(id: string) {
+    try {
+      return await this.databases.getDocument(
+        myConfig.REACT_APP_POSTS_DATABASE,
+        myConfig.REACT_APP_CATEGORIES_COLLECTION,
+        id,
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateCategory(id: string, postId: string) {
+    const response = (await this.getCategoryByID(id)) as unknown as Category;
+
+    const posts = response.posts;
+    posts.push(postId);
+
+    return await this.databases.updateDocument(
+      myConfig.REACT_APP_POSTS_DATABASE,
+      myConfig.REACT_APP_CATEGORIES_COLLECTION,
+      id,
+      {posts},
+    );
+  }
+
+  async addCategoryOrCreate(postID: string, category: string[]) {
+    for (let i = 0; i < category.length; i++) {
+      const response = await this.getEqualTitleCategory(category[i]);
+      if (response.length === 0) {
+        await this.createCategory({
+          posts: [postID],
+          title: category[i],
+        });
+      } else {
+        response[0].$id && (await this.updateCategory(response[0].$id, postID));
+      }
     }
   }
 }
