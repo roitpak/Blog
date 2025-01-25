@@ -134,6 +134,32 @@ function AddPostModal({showAddPost, close}: AddPostModalProps): JSX.Element {
             <View style={styles(theme).contentContainer}>
               <CustomText title={'Category'} type={'h2'} />
               <CustomText title={strings.categorySubtitle} type={'p2'} />
+              {category && (
+                <View style={styles(theme).categoryContainer}>
+                  <FlatList
+                    style={styles(theme).categoryFlatList}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    data={category}
+                    renderItem={({item, index}) => (
+                      <TouchableOpacity
+                        onPress={() => onPressCategoryItem(index)}
+                        style={styles(theme).category}>
+                        <CustomText title={item} type={'p2'} />
+                        <View style={styles(theme).crossIcon}>
+                          <Icon
+                            onPress={() => onPressCategoryItem(index)}
+                            size={theme.sizes.medium}
+                            color={theme.colors.button_background}
+                            icon="cross"
+                          />
+                        </View>
+                      </TouchableOpacity>
+                    )}
+                    keyExtractor={item => item}
+                  />
+                </View>
+              )}
               <View>
                 <CustomTextInput
                   onSubmitEditing={addCategory}
@@ -149,7 +175,7 @@ function AddPostModal({showAddPost, close}: AddPostModalProps): JSX.Element {
                   <CustomText type={'p1'} title={strings.addCategory} />
                   <Icon
                     onPress={addCategory}
-                    size={theme.sizes.large}
+                    size={theme.sizes.medium}
                     color={theme.colors.text_color}
                     icon="plus"
                   />
@@ -174,25 +200,6 @@ function AddPostModal({showAddPost, close}: AddPostModalProps): JSX.Element {
                   </View>
                 )}
               </View>
-              {category && (
-                <View style={styles(theme).categoryContainer}>
-                  {category.map((item, index) => (
-                    <TouchableOpacity
-                      onPress={() => onPressCategoryItem(index)}
-                      style={styles(theme).category}>
-                      <CustomText title={item} type={'p2'} />
-                      <View style={styles(theme).crossIcon}>
-                        <Icon
-                          onPress={() => onPressCategoryItem(index)}
-                          size={theme.sizes.medium}
-                          color={theme.colors.button_background}
-                          icon="cross"
-                        />
-                      </View>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
             </View>
             <View style={styles(theme).contentContainer}>
               <Button
@@ -233,7 +240,7 @@ const styles = (theme: Theme) =>
     },
     categoryContainer: {
       flexDirection: 'row',
-      marginTop: theme.sizes.large,
+      marginTop: theme.sizes.small,
     },
     category: {
       padding: theme.sizes.extra_extra_small,
@@ -254,12 +261,16 @@ const styles = (theme: Theme) =>
     searchedCategoryView: {
       position: 'absolute',
       left: 0,
-      bottom: -theme.sizes.extra_extra_large,
+      bottom: -theme.sizes.extra_extra_small,
       backgroundColor: theme.colors.background_color,
       borderRadius: theme.sizes.border_radius,
-      padding: theme.sizes.medium,
+      padding: theme.sizes.small,
       borderWidth: 1,
       borderColor: theme.colors.text_color,
+      zIndex: 999,
+    },
+    categoryFlatList: {
+      paddingTop: theme.sizes.extra_extra_small,
     },
   });
 
