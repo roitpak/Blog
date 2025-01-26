@@ -15,13 +15,28 @@ export class CategoryService {
     this.databases = new Databases(this.client);
   }
 
+  async getCategories() {
+    const queries = [Query.orderDesc('postsLength')];
+    try {
+      return (
+        await this.databases.listDocuments(
+          myConfig.REACT_APP_POSTS_DATABASE,
+          myConfig.REACT_APP_CATEGORIES_COLLECTION,
+          queries,
+        )
+      ).documents as unknown as Category[];
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async createCategory(category: Category) {
     try {
       const response = await this.databases.createDocument(
         myConfig.REACT_APP_POSTS_DATABASE,
         myConfig.REACT_APP_CATEGORIES_COLLECTION,
         ID.unique(),
-        category,
+        {...category, postsLength: 1},
       );
       console.log('created category');
       return response;
@@ -81,7 +96,7 @@ export class CategoryService {
       myConfig.REACT_APP_POSTS_DATABASE,
       myConfig.REACT_APP_CATEGORIES_COLLECTION,
       id,
-      {posts},
+      {posts, postsLength: posts.length},
     );
   }
 

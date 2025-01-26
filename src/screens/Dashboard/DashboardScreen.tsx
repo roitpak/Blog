@@ -35,6 +35,8 @@ import Status from '../../components/post/enum/PostStatusEnum';
 import {getValueFromUrl} from '../../helpers/functions';
 import PaginationButton from '../../components/dashboard/Pagination';
 import {Query} from 'appwrite';
+import CategoryTabbar from '../../components/dashboard/CategoryTabbar';
+import {Category} from '../../appwrite/types/category';
 // import Markdown from 'react-native-markdown-display';
 //TODO
 
@@ -46,7 +48,9 @@ function DashboardScreen(): JSX.Element {
   const {theme} = useTheme();
   const [showAddPost, setShowAddPost] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
 
   const goToSign = () => navigation.navigate(loginScreen);
@@ -81,7 +85,7 @@ function DashboardScreen(): JSX.Element {
     // Return the function to unsubscribe from the event so it gets removed on unmount
     return unsubscribe;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAdmin, isUserLoading]);
+  }, [isAdmin, isUserLoading, selectedCategory]);
 
   function openAppOrRedirect() {
     const os = getMobileOperatingSystem();
@@ -150,9 +154,12 @@ function DashboardScreen(): JSX.Element {
   }, [navigation]);
 
   const getPosts = async (customQueries: string[] = []) => {
+    const query = customQueries;
+    selectedCategory &&
+      query.push(Query.equal('category', selectedCategory?.title));
     setLoading(true);
     await postService
-      .getPosts(isAdmin, customQueries)
+      .getPosts(isAdmin, query)
       .then(data => {
         if (data) {
           setPosts(data);
@@ -229,6 +236,11 @@ function DashboardScreen(): JSX.Element {
           <Button title={'Add Post'} onPress={addPost} />
         </View>
       )}
+      <CategoryTabbar
+        selectedCategory={selectedCategory}
+        onForYou={() => setSelectedCategory(null)}
+        onCategoryPress={category => setSelectedCategory(category)}
+      />
       {loading && isUserLoading && (
         <ActivityIndicator
           style={styles(theme).indicator}
