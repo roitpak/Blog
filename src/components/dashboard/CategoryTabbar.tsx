@@ -23,8 +23,8 @@ const CategoryTabbar = ({
   useEffect(() => {
     categoryService
       .getCategories()
-      .then(categories => {
-        setCategories(categories);
+      .then(receivedCategories => {
+        setCategories(receivedCategories);
       })
       .catch(err => {
         console.log(err);
