@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import WebView from 'react-native-webview';
 import {useTheme} from '../../context/theme/useTheme';
 
@@ -12,6 +12,7 @@ function HtmlRenderer({content}: HtmlRendererProps): JSX.Element {
   const scaleSize = 2.5;
 
   const [webViewHeight, setWebViewHeight] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
 
   const returnHtmlContent = () => {
     return `
@@ -104,7 +105,9 @@ function HtmlRenderer({content}: HtmlRendererProps): JSX.Element {
   `;
   return (
     <View style={{height: webViewHeight}}>
+      {loading && <ActivityIndicator color={theme.colors.text_color} />}
       <WebView
+        onLoadEnd={() => setTimeout(() => setLoading(false), 1000)}
         scrollEnabled={false}
         automaticallyAdjustContentInsets={true}
         originWhitelist={['*']}
