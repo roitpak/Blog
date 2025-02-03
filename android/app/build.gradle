@@ -82,8 +82,8 @@ android {
         applicationId "com.roitpak.blog"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 4
-        versionName "1.3"
+        versionCode Integer.parseInt(System.getenv("BITRISE_BUILD_NUMBER") ?: 5)
+        versionName System.getenv("BITRISE_GIT_TAG") ?: "1.4.0"
     }
     signingConfigs {
         debug {
