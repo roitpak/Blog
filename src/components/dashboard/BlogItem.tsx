@@ -69,10 +69,11 @@ const BlogItem = ({item}: AddPostModalProps) => {
 const styles = (theme: Theme) =>
   StyleSheet.create({
     container: {
-      marginTop: theme.sizes.extra_large,
+      marginTop: theme.sizes.medium,
+      marginBottom: theme.sizes.large,
       borderBottomColor: theme.colors.list_border,
       borderBottomWidth: 1,
-      paddingBottom: theme.sizes.extra_small,
+      paddingBottom: theme.sizes.extra_extra_small,
     },
     titleContainer: {
       marginBottom: theme.sizes.extra_extra_small,

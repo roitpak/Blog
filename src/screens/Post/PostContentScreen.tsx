@@ -368,7 +368,7 @@ function PostContentScreen({route}: any): JSX.Element {
 const styles = (theme: Theme) =>
   StyleSheet.create({
     container: {
-      paddingBottom: theme.sizes.extra_extra_large * 2,
+      paddingBottom: theme.sizes.medium,
       paddingTop: theme.sizes.large,
     },
     headerContainer: {
