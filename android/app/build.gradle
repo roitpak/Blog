@@ -82,8 +82,8 @@ android {
         applicationId "com.roitpak.blog"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode Integer.parseInt(System.getenv("BITRISE_BUILD_NUMBER") ?: 5)
-        versionName System.getenv("BITRISE_GIT_TAG") ?: "1.4.0"
+        versionCode 7
+        versionName "1.6.0"
     }
     signingConfigs {
         debug {
@@ -93,16 +93,11 @@ android {
             keyPassword 'android'
         }
         release {
-                keyAlias System.getenv("BITRISEIO_ANDROID_KEYSTORE_ALIAS")
-                keyPassword System.getenv("BITRISEIO_ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD")
-                storeFile file(System.getenv("HOME") + "/android/app/rohitBlog.keystore")
-                storePassword System.getenv("BITRISEIO_ANDROID_KEYSTORE_PASSWORD")
-            
-            // if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
-            //     storeFile file(MYAPP_UPLOAD_STORE_FILE)
-            //     storePassword MYAPP_UPLOAD_STORE_PASSWORD
-            //     keyAlias MYAPP_UPLOAD_KEY_ALIAS
-            //     keyPassword MYAPP_UPLOAD_KEY_PASSWORD
+            if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
+                storeFile file(MYAPP_UPLOAD_STORE_FILE)
+                storePassword MYAPP_UPLOAD_STORE_PASSWORD
+                keyAlias MYAPP_UPLOAD_KEY_ALIAS
+                keyPassword MYAPP_UPLOAD_KEY_PASSWORD
             }
         }
     }
