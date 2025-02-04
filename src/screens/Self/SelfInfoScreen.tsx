@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Image,
-  Linking,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Linking, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {dashboardScreen, loginScreen} from '../../constants/Screens';
 import {ParamListBase, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -19,7 +12,6 @@ import CustomText from '../../components/common/CustomText';
 import strings from '../../constants/strings.json';
 import links from '../../constants/links.json';
 import {Theme} from '../../constants/Types';
-import portrait from '../../assets/img/portrait.png';
 import Icon from '../../assets/Icon';
 
 function SelfInfoScreen(): JSX.Element {
@@ -57,15 +49,8 @@ function SelfInfoScreen(): JSX.Element {
       <View style={styles(theme).imageTextContainer}>
         <View style={styles(theme).textContainer}>
           <CustomText type="p1" title={strings.introMessage1} />
-          <CustomText type="h1" title={`${strings.name},`} />
           <CustomText bold type="p1" title={strings.introMessage2} />
         </View>
-        <Image
-          style={
-            Platform.OS === 'web' ? styles(theme).imageWeb : styles(theme).image
-          }
-          source={portrait}
-        />
       </View>
       <CustomText
         style={styles(theme).introMessageStyle}

@@ -28,7 +28,7 @@ const DashboardButtonGroup = () => {
       <TouchableOpacity
         onPress={goSelfInfoScreen}
         style={[styles(theme).items, styles(theme).borderRight]}>
-        <CustomText style={styles(theme).text} type="p1" title="Me" />
+        <CustomText style={styles(theme).text} type="p1" title="About us" />
       </TouchableOpacity>
       <TouchableOpacity
         onPress={goToPrivacyScreen}
