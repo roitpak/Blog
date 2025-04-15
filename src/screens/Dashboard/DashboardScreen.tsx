@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Linking,
+  NativeModules,
   Platform,
   RefreshControl,
   StyleSheet,
@@ -41,6 +42,7 @@ import {Category} from '../../appwrite/types/category';
 //TODO
 
 function DashboardScreen(): JSX.Element {
+  NativeModules.MyNativeModule.showToast('Hello from Native!');
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const {user, isAdmin, logout, isUserLoading} = useUser();
   const [posts, setPosts] = useState<Post[]>([]);
