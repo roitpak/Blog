@@ -24,6 +24,7 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
           @SuppressWarnings("UnnecessaryLocalVariable")
           List<ReactPackage> packages = new PackageList(this).getPackages();
+          packages.add(new com.roitpak.blog.MyPackage());
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new SplashScreenReactPackage()); // get packages already imports splash screen
           return packages;
